@@ -92,9 +92,14 @@ NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
     
     NSString *txtPath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", filename, ext]];
     
-    if ([fileManager fileExistsAtPath:txtPath] == YES) {
-        [fileManager removeItemAtPath:txtPath error:&error];
-    
+//    if ([fileManager fileExistsAtPath:txtPath] == YES) {
+//        [fileManager removeItemAtPath:txtPath error:&error];
+//    
+//        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:filename ofType:ext];
+//        [fileManager copyItemAtPath:resourcePath toPath:txtPath error:&error];
+//    }
+    if ([fileManager fileExistsAtPath:txtPath] == NO) {
+        //copy from resource to user App Documents folder if not file there
         NSString *resourcePath = [[NSBundle mainBundle] pathForResource:filename ofType:ext];
         [fileManager copyItemAtPath:resourcePath toPath:txtPath error:&error];
     }
