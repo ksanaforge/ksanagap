@@ -14,7 +14,9 @@
 @end
 
 
-@interface ViewController () <UIWebViewDelegate>
+@interface ViewController () <UIWebViewDelegate> {
+    UIWebView *theWebView;
+}
 
 @property (nonatomic, readwrite, strong) JSContext *js;
 
@@ -25,22 +27,23 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    
+    UIButton *refreshButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 44 - 20, 20, 44, 44)];
+    [refreshButton setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateNormal];
+    [refreshButton addTarget:self action:@selector(refresh) forControlEvents:UIControlEventTouchDown];
     [self writeFile:@"index" withExt:@"html"];
     [self writeFile:@"build" withExt:@"js"];
     [self writeFile:@"test" withExt:@"txt"];
-    UIWebView *webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
-    webView.delegate = self;
+    theWebView = [[UIWebView alloc] initWithFrame:self.view.bounds];
+    theWebView.delegate = self;
 //    [webView loadHTMLString:@"<html><h1> hello string </h1></html>" baseURL:nil];
 //    NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:nil];
     
     NSData *htmlData = [self readFile:@"index.html"];
-    [webView loadData:htmlData MIMEType:@"text/html" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
-    self.js = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+    [theWebView loadData:htmlData MIMEType:@"text/html" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
+    self.js = [theWebView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
     [self injectJavascriptFunctions:self.js];
-    
-
-    [self.view addSubview:webView];
+    [self.view addSubview:theWebView];
+    [self.view addSubview:refreshButton];
 }
 
 - (void)injectJavascriptFunctions:(JSContext *)js {
@@ -91,9 +94,10 @@ NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
     
     if ([fileManager fileExistsAtPath:txtPath] == YES) {
         [fileManager removeItemAtPath:txtPath error:&error];
+    
+        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:filename ofType:ext];
+        [fileManager copyItemAtPath:resourcePath toPath:txtPath error:&error];
     }
-    NSString *resourcePath = [[NSBundle mainBundle] pathForResource:filename ofType:ext];
-    [fileManager copyItemAtPath:resourcePath toPath:txtPath error:&error];
 }
 
 - (NSData *)readFile:(NSString *)fullname {
@@ -106,13 +110,22 @@ NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [self reloadView:webView];
+    // ...
+}
+
+- (void)reloadView:(UIWebView *)webView {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *jsFilePath = [documentsDirectory stringByAppendingPathComponent:@"build.js"];
     NSURL *jsURL = [NSURL fileURLWithPath:jsFilePath];
     NSString *javascriptCode = [NSString stringWithContentsOfFile:jsURL.path encoding:NSUTF8StringEncoding error:nil];
     [webView stringByEvaluatingJavaScriptFromString:javascriptCode];
-    // ...
+}
+
+// helper method
+- (void)refresh {
+    [self reloadView:theWebView];
 }
 
 @end

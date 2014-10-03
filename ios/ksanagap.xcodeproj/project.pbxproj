@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9F57699719DD94590007C2EF /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F57699619DD94590007C2EF /* refresh.png */; };
 		BA323D0319DC1E5400F66BB8 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = BA323D0219DC1E5400F66BB8 /* test.txt */; };
 		BA85B14519DBE05B00FF042F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA85B14419DBE05B00FF042F /* main.m */; };
 		BA85B14819DBE05B00FF042F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BA85B14719DBE05B00FF042F /* AppDelegate.m */; };
@@ -29,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9F57699619DD94590007C2EF /* refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh.png; sourceTree = "<group>"; };
 		BA323CF619DC115C00F66BB8 /* NLContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NLContext.h; path = ../../../Nodelike/Nodelike/NLContext.h; sourceTree = "<group>"; };
 		BA323CF719DC118800F66BB8 /* pthread-fixes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "pthread-fixes.h"; path = "../../../Nodelike/libuv/include/pthread-fixes.h"; sourceTree = "<group>"; };
 		BA323CF819DC118800F66BB8 /* stdint-msvc2008.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "stdint-msvc2008.h"; path = "../../../Nodelike/libuv/include/stdint-msvc2008.h"; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 				BA85B16719DBEB7400FF042F /* build.js */,
 				BA323D0219DC1E5400F66BB8 /* test.txt */,
 				BA85B14C19DBE05B00FF042F /* Main.storyboard */,
+				9F57699619DD94590007C2EF /* refresh.png */,
 				BA85B14F19DBE05B00FF042F /* Images.xcassets */,
 				BA85B14219DBE05B00FF042F /* Supporting Files */,
 			);
@@ -198,6 +201,7 @@
 				TargetAttributes = {
 					BA85B13E19DBE05B00FF042F = {
 						CreatedOnToolsVersion = 6.0;
+						DevelopmentTeam = K78UD4724Z;
 					};
 					BA85B15419DBE05B00FF042F = {
 						CreatedOnToolsVersion = 6.0;
@@ -234,6 +238,7 @@
 				BA85B15019DBE05B00FF042F /* Images.xcassets in Resources */,
 				BA85B16619DBE0ED00FF042F /* index.html in Resources */,
 				BA323D0319DC1E5400F66BB8 /* test.txt in Resources */,
+				9F57699719DD94590007C2EF /* refresh.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,6 +375,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = ksanagap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -377,6 +384,7 @@
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/Nodelike-aslqrgkdaaxnpiecrjggzhdcydaw/Build/Products/Debug-iphonesimulator",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -385,6 +393,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = ksanagap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -392,6 +402,7 @@
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/Nodelike-aslqrgkdaaxnpiecrjggzhdcydaw/Build/Products/Debug-iphonesimulator",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
