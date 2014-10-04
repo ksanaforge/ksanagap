@@ -4,6 +4,8 @@ import java.nio.*;
 import java.util.*;
 import android.content.Context;
 import android.webkit.JavascriptInterface;
+import android.util.Log;
+import java.util.Arrays;
 
 /**
  * Created by yapcheahshen on 2014/10/2.
@@ -29,19 +31,7 @@ public class fs_droid {
     public fs_droid(){//Context c) {
        // mContext = c;
     }
-    protected long[] unpack_int (byte[] A) {
-        long B[] = new long[A.length];
-        int a = 0, b = 0;
-        while (true) {
-            long n = 0, S = 0;
-            do { n += (A[a] & 0x7f) << S; S += 7; } while ((A[a++] & 0x80) == 0);
-            B[b++] = n;
-            if (a >= A.length) break;
-        }
-        long R[] = new long[b];
-        for (int i = 0; i < R.length; i++) R[i] = B[i];
-        return R;
-    }
+
     public static String convertStreamToString(InputStream is) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
@@ -117,48 +107,51 @@ public class fs_droid {
             F.f.seek(pos);
             F.f.read(b, 0, sz);
         } catch (final Exception e) { return null; }
+        return b;
     }
     @JavascriptInterface
-    public int readInt32Sync (int fid, long pos, int sz) {
-        byte[] b=readBytes(fid,pos,4);
+    public int readInt32Sync (int fid, long pos) {
+        byte[] b=readBytes(fid, pos, 4);
         ByteBuffer wrapped=ByteBuffer.wrap(b);
-        return wrapped.getInt();
+        int i=wrapped.getInt();
+        return i;
     }
     @JavascriptInterface
-    public long readUInt32Sync (int fid, long pos, int sz) {
-        return readInt32Sync(fid, pos, sz);//JAVA has no unsigned
+    public long readUInt32Sync (int fid, long pos) {
+        return readInt32Sync(fid, pos);//JAVA has no unsigned
     }
 
     @JavascriptInterface
-    public short readUInt8Sync (int fid, long pos, int sz) {
-        byte[] b=readBytes(fid,pos,1);
+    public short readUInt8Sync (int fid, long pos) {
+        byte[] b=readBytes(fid, pos, 1);
         ByteBuffer wrapped=ByteBuffer.wrap(b);
-        return wrapped.getShort();
+        short v=(short)(wrapped.get(0));
+        return v;
     }
 
     protected String nodejs2javaEncoding (String nodejsenc) {
         String enc = "UTF-8";
-        if (nodejsenc.equals("ucs2")) enc = "UTF-16";
+        if (nodejsenc.equals("ucs2")) enc = "UTF-16LE";
         return enc;
     }
 
     @JavascriptInterface
     public String readEncodedStringSync (int fid, long pos, int sz, String encoding) {
         String enc=nodejs2javaEncoding(encoding);
-        byte [] b=readBytes(fid,pos,sz);
+        byte [] b=readBytes(fid, pos, sz);
         try{
-            return  new String(b,enc);
+            String s=new String(b,enc);
+            return  s;
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
     }
-    }
 
     @JavascriptInterface
     public String readStringSync (int fid, long pos, int sz) {
-        byte [] b=readBytes(fid,pos,sz);
+        byte [] b=readBytes(fid, pos, sz);
         try{
             String s = new String(b,"UTF-8");
             return s;
@@ -171,20 +164,41 @@ public class fs_droid {
 
     @JavascriptInterface
     public String readBufSync (int fid, long pos, int sz) {
-        byte[] b=readBytes(fid,pos,sz);
+        byte[] b=readBytes(fid, pos, sz);
         String str=b.toString();
         return str;
     }
-    @JavascriptInterface
-    public String readBuf_packedint (int fid, long pos, int sz) {
-        byte[] b=readBytes(fid,pos,sz);
-        long[] arr=unpack_int(b);
-        String str=arr.toString();
-        return str;
+    protected long[] unpack_int (byte[] A, int count, boolean reset , int[] adv) {
+        long B[] = new long[A.length];
+        int a = 0, b = 0 , n=0;
+        do {
+            short S = 0;
+            do {
+                n += (A[a] & 0x7f) << S;
+                S += 7;
+                a++; if (a>=A.length) break;
+            } while ( (A[a] & 0x80)!=0 );
+            B[b++] = n;
+            if (reset) n=0;
+            count--;
+        } while (a<A.length && count>0);
+        long R[] = new long[b];
+        adv[0]=a; //how many bytes read
+        for (int i = 0; i < R.length; i++) R[i] = B[i];
+        return R;
     }
-
+    @JavascriptInterface
+    public String readBufSync_packedint (int fid, long pos, int blocksize, int count, boolean reset) {
+        byte[] b=readBytes(fid, pos, blocksize);
+        int[] adv= new int[1];
+        long[] arr=unpack_int(b,count,reset,adv);
+        String str=Arrays.toString(arr);
+        String s=Integer.toString(adv[0]) + str; // javascript use parse Int to get the adv
+        return s;
+    }
+    @JavascriptInterface
     public String readFixedArraySync (int fid, long pos, int count, int unitsz) {
-        byte[] b=readBytes(fid,pos,count*unitsz);
+        byte[] b=readBytes(fid, pos, count * unitsz);
         String str="";
         ByteBuffer wrapped=ByteBuffer.wrap(b);
         if (unitsz==1) {
@@ -196,13 +210,11 @@ public class fs_droid {
         }
         return str;
     }
-
-    public String readFixedArraySync (int fid, long pos, int sz, String encoding) {
-        String enc=nodejs2javaEncoding(encoding);
-        byte[] b=readBytes(fid,pos,count*unitsz);
-        String str="";
-
-        if (enc==)
+    @JavascriptInterface
+    public String readStringArraySync (int fid, long pos, int sz, String encoding) {
+        String s=readEncodedStringSync(fid,pos,sz,encoding);
+        s=s.replaceAll("\0","\uffff");
+        return s;
     }
 }
 

@@ -14,6 +14,14 @@ public class console_droid{
 
     @JavascriptInterface
     public void log(String msg){
+        Log.v("ksanagap",msg);
+    }
+    @JavascriptInterface
+    public void debug(String msg){
         Log.d("ksanagap",msg);
+    }
+    @JavascriptInterface
+    public void warn(String msg){
+        Log.i("ksanagap",msg);
     }
 }

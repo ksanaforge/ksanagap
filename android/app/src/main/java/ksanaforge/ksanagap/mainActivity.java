@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.webkit.WebChromeClient;
 import android.util.Log;
 import ksanaforge.ksanagap.jsintf.*;
+import android.os.Build;
 import static ksanaforge.ksanagap.R.layout.activity_main;
 
 public class mainActivity extends Activity {
@@ -31,7 +32,11 @@ public class mainActivity extends Activity {
 
     protected void initWebview() {
         WebView myWebView = (WebView) findViewById(R.id.webview);
+        myWebView.getSettings().setDomStorageEnabled(true);
         myWebView.getSettings().setJavaScriptEnabled(true);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
         myWebView.addJavascriptInterface(ksanagap_api, "ksanagap");
         myWebView.addJavascriptInterface(console_api, "console");
         myWebView.addJavascriptInterface(fs_api, "fs");
