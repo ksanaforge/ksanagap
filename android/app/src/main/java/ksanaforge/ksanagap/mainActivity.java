@@ -21,7 +21,7 @@ public class mainActivity extends Activity {
     protected WebView webView;
     final ksanagap_droid ksanagap_api= new ksanagap_droid();//this);
     final fs_droid fs_api= new fs_droid();//this);
-    final console_droid console_api= new console_droid();//this);
+    //  final console_droid console_api= new console_droid();//this);  //already have in 4.4
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +38,7 @@ public class mainActivity extends Activity {
             WebView.setWebContentsDebuggingEnabled(true);
         }
         myWebView.addJavascriptInterface(ksanagap_api, "ksanagap");
-        myWebView.addJavascriptInterface(console_api, "console");
+        //myWebView.addJavascriptInterface(console_api, "console");
         myWebView.addJavascriptInterface(fs_api, "fs");
         loadHomepage("home");
     }
