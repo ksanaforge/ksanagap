@@ -143,7 +143,6 @@ public class fs_droid {
             String s=new String(b,enc);
             return  s;
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
