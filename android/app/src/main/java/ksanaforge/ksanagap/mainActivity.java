@@ -21,12 +21,16 @@ public class mainActivity extends Activity {
     protected WebView webView;
     final ksanagap_droid ksanagap_api= new ksanagap_droid();//this);
     final fs_droid fs_api= new fs_droid();//this);
+    final kfs_droid kfs_api= new kfs_droid();
+    protected String[] dirs=null;
     //  final console_droid console_api= new console_droid();//this);  //already have in 4.4
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
+        dirs=getAppDirs();
         initWebview();
+        if (dirs.length>0) loadHomepage(dirs[0]);
     }
 
 
@@ -39,14 +43,15 @@ public class mainActivity extends Activity {
         }
         myWebView.addJavascriptInterface(ksanagap_api, "ksanagap");
         //myWebView.addJavascriptInterface(console_api, "console");
-        myWebView.addJavascriptInterface(fs_api, "fs");
-        loadHomepage("home");
+        myWebView.addJavascriptInterface(fs_api, "fs"); //node compatible interface
+        myWebView.addJavascriptInterface(kfs_api, "kfs"); //for kdb
     }
 
     public void loadHomepage(String appname) {
         setTitle(appname);
         sdpath=ksanapath+appname+"/";
         fs_api.setRootPath(sdpath);
+        kfs_api.setRootPath(sdpath);
         sdindex=sdpath+this.getString(R.string.homepage);
         WebView myWebView = (WebView) findViewById(R.id.webview);
         myWebView.loadUrl("file://"+sdindex);
@@ -70,13 +75,11 @@ public class mainActivity extends Activity {
     }
     private int APPITEMSTART=100;
     protected void createAppMenu(Menu menu) {
-        String[] dirs=getAppDirs();
         for (int i=0;i<dirs.length;i++) {
             menu.add(Menu.NONE, i+APPITEMSTART, Menu.NONE, dirs[i]);
         }
     }
     protected void gotoApp(int id){
-        String[] dirs=getAppDirs();
         String appname=dirs[id-APPITEMSTART];
         loadHomepage(appname);
     }
