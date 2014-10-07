@@ -6,36 +6,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.os.Environment;
-import android.webkit.WebChromeClient;
-import android.util.Log;
 import ksanaforge.ksanagap.jsintf.*;
 import android.os.Build;
 import static ksanaforge.ksanagap.R.layout.activity_main;
 import java.io.File;
 import java.io.*;
+
 public class mainActivity extends Activity {
 
     private String ksanapath= Environment.getExternalStorageDirectory() +"/ksanagap/";
     private String sdpath="",sdindex="";
     private String assetpath="file:///android_asset/";
-    protected WebView webView;
     final ksanagap_droid ksanagap_api= new ksanagap_droid();//this);
     final fs_droid fs_api= new fs_droid();//this);
     final kfs_droid kfs_api= new kfs_droid();
     protected String[] dirs=null;
+    protected WebView wv;
     //  final console_droid console_api= new console_droid();//this);  //already have in 4.4
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
         dirs=getAppDirs();
-        initWebview();
-        if (dirs.length>0) loadHomepage(dirs[0]);
+        wv=(WebView)findViewById(R.id.webview);
+        initWebview(wv);
+        if (dirs.length>0) loadHomepage(wv,dirs[0]);
     }
-
-
-    protected void initWebview() {
-        WebView myWebView = (WebView) findViewById(R.id.webview);
+    protected void initWebview(WebView myWebView) {
+        //MyWebView myWebView = (MyWebView) findViewById(R.id.webview);
         myWebView.getSettings().setDomStorageEnabled(true);
         myWebView.getSettings().setJavaScriptEnabled(true);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -47,14 +45,13 @@ public class mainActivity extends Activity {
         myWebView.addJavascriptInterface(kfs_api, "kfs"); //for kdb
     }
 
-    public void loadHomepage(String appname) {
+    public void loadHomepage(WebView wv,String appname) {
         setTitle(appname);
         sdpath=ksanapath+appname+"/";
         fs_api.setRootPath(sdpath);
         kfs_api.setRootPath(sdpath);
         sdindex=sdpath+this.getString(R.string.homepage);
-        WebView myWebView = (WebView) findViewById(R.id.webview);
-        myWebView.loadUrl("file://"+sdindex);
+        wv.loadUrl("file://"+sdindex);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -81,7 +78,7 @@ public class mainActivity extends Activity {
     }
     protected void gotoApp(int id){
         String appname=dirs[id-APPITEMSTART];
-        loadHomepage(appname);
+        loadHomepage(wv,appname);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
