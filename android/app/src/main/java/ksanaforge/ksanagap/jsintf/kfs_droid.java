@@ -21,15 +21,15 @@ import java.util.Map;
  * Created by yapcheahshen on 2014/10/7.
  */
 public class kfs_droid {
-    class FilePointer { RandomAccessFile f; int id; String filename;}
+    class FilePointer { RandomAccessFile f; int handle; String filename;}
     static Collection<FilePointer> filePointers = new ArrayList<FilePointer>();
-    static int fid_count = 0;
+    static int f_count = 0;
     static String rootpath= "";
     public kfs_droid(){//Context c) {
         // mContext = c;
     }
-    protected static FilePointer find_fp(int id) {
-        for (FilePointer F : filePointers) if (F.id == id) return F;
+    protected static FilePointer find_fp(int handle) {
+        for (FilePointer F : filePointers) if (F.handle == handle) return F;
         return null;
     }
     protected static FilePointer find_filename(String filename) {
@@ -39,12 +39,10 @@ public class kfs_droid {
     public void setRootPath(String path){
         rootpath=path;
     }
-    // Context mContext;
-
 
     @JavascriptInterface
-    public void close(int fid) {
-        FilePointer F = find_fp(fid);
+    public void close(int handle) { // close the file by file handle
+        FilePointer F = find_fp(handle);
         if (F!=null) {
             try {
                 filePointers.remove(F);
@@ -55,69 +53,62 @@ public class kfs_droid {
         }
     }
     @JavascriptInterface
-    public int open(String fname) {
+    public int open(String fname) {  // open a file by name, check if the file already open
         FilePointer F = find_filename(rootpath + fname);
-        if (F!=null) return F.id;
+        if (F!=null) return F.handle;
         try {
             RandomAccessFile f = new RandomAccessFile(rootpath+fname, "r");
             F = new FilePointer();
             F.f=f;
-            F.id = ++fid_count;
+            F.handle = ++f_count;
             filePointers.add(F);
         } catch (final Exception e) {
             return -1;
         };
-        return F.id;
+        return F.handle;
     }
     @JavascriptInterface
-    public long getFileSize(int fid) {
+    public long getFileSize(int handle) {
         try {
-            FilePointer F = find_fp(fid);
+            FilePointer F = find_fp(handle);
             return F.f.length();
         } catch (final Exception e) { return 0; }
     }
 
-    protected byte[] readBytes (int fid, long pos, int sz) {
+    protected byte[] readBytes (int handle, long pos, int sz) {
         byte[] b = new byte[sz];
         try{
-            FilePointer F = find_fp(fid);
+            FilePointer F = find_fp(handle);
             F.f.seek(pos);
             F.f.read(b, 0, sz);
         } catch (final Exception e) { return null; }
         return b;
     }
     @JavascriptInterface
-    public int readInt32 (int fid, long pos) {
-        byte[] b=readBytes(fid, pos, 4);
+    public int readInt32 (int handle, long pos) {
+        byte[] b=readBytes(handle, pos, 4);
         ByteBuffer wrapped=ByteBuffer.wrap(b);
         int i=wrapped.getInt();
         return i;
     }
     @JavascriptInterface
-    public long readUInt32 (int fid, long pos) {
-        return readInt32(fid, pos);//JAVA has no unsigned
+    public long readUInt32 (int handle, long pos) {
+        return readInt32(handle, pos);//JAVA has no unsigned
     }
 
     @JavascriptInterface
-    public short readUInt8 (int fid, long pos) {
-        byte[] b=readBytes(fid, pos, 1);
+    public short readUInt8 (int handle, long pos) {
+        byte[] b=readBytes(handle, pos, 1);
         ByteBuffer wrapped=ByteBuffer.wrap(b);
         short v=(short)(wrapped.get(0));
         return v;
     }
 
-    protected String nodejs2javaEncoding (String nodejsenc) {
-        String enc = "UTF-8";
-        if (nodejsenc.equals("ucs2")) enc = "UTF-16LE";
-        return enc;
-    }
-
     @JavascriptInterface
-    public String readEncodedString (int fid, long pos, int sz, String encoding) {
-        String enc=nodejs2javaEncoding(encoding);
-        byte [] b=readBytes(fid, pos, sz);
+    public String readULE16String (int handle, long pos, int sz) {
+        byte [] b=readBytes(handle, pos, sz);
         try{
-            String s=new String(b,enc);
+            String s=new String(b,"UTF-16LE");
             return  s;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -126,8 +117,8 @@ public class kfs_droid {
     }
 
     @JavascriptInterface
-    public String readString (int fid, long pos, int sz) {
-        byte [] b=readBytes(fid, pos, sz);
+    public String readUTF8String (int handle, long pos, int sz) {
+        byte [] b=readBytes(handle, pos, sz);
         try{
             String s = new String(b,"UTF-8");
             return s;
@@ -139,8 +130,8 @@ public class kfs_droid {
     }
 
     @JavascriptInterface
-    public String readBuf (int fid, long pos, int sz) {
-        byte[] b=readBytes(fid, pos, sz);
+    public String readBuf (int handle, long pos, int sz) {
+        byte[] b=readBytes(handle, pos, sz);
         String str=b.toString();
         return str;
     }
@@ -164,8 +155,8 @@ public class kfs_droid {
         return R;
     }
     @JavascriptInterface
-    public String readBuf_packedint (int fid, long pos, int blocksize, int count, boolean reset) {
-        byte[] b=readBytes(fid, pos, blocksize);
+    public String readBuf_packedint (int handle, long pos, int blocksize, int count, boolean reset) {
+        byte[] b=readBytes(handle, pos, blocksize);
         int[] adv= new int[1];
         long[] arr=unpack_int(b,count,reset,adv);
         String str=Arrays.toString(arr);
@@ -173,8 +164,8 @@ public class kfs_droid {
         return s;
     }
     @JavascriptInterface
-    public String readFixedArray (int fid, long pos, int count, int unitsz) {
-        byte[] b=readBytes(fid, pos, count * unitsz);
+    public String readFixedArray (int handle, long pos, int count, int unitsz) {
+        byte[] b=readBytes(handle, pos, count * unitsz);
         String str="";
         ByteBuffer wrapped=ByteBuffer.wrap(b);
         if (unitsz==1) {
@@ -187,8 +178,11 @@ public class kfs_droid {
         return str;
     }
     @JavascriptInterface
-    public String readStringArray (int fid, long pos, int sz, String encoding) {
-        String s=readEncodedString(fid,pos,sz,encoding);
+    public String readStringArray (int handle, long pos, int sz, String enc) {
+        String s;
+        if (enc.compareTo("utf8")==0) s=readUTF8String(handle,pos,sz);
+        else             s=readULE16String(handle,pos,sz);
+        
         s=s.replaceAll("\0","\uffff");
         return s;
     }
