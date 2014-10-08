@@ -26,12 +26,10 @@
 }
 
 @property (nonatomic, readwrite, strong) JSContext *js;
-@property (nonatomic, readwrite, strong) fs_ios *fs;
-@property (nonatomic, readwrite, strong) kfs_ios *kfs;
 @end
 
-NSString *root;
-
+kfs_ios *kfs;
+fs_ios *fs;
 @implementation ViewController
 
 - (void)viewDidLoad {
@@ -42,9 +40,6 @@ NSString *root;
     webView.delegate = self;
     
     toobar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
-    menuButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(menuButtonTapped)];
-    
-    UIBarButtonItem *flexableItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
     
     buttons = [self readDir];
     NSMutableArray *mutArray = [[NSMutableArray alloc] init];
@@ -53,19 +48,15 @@ NSString *root;
         button.tag = i;
         mutArray[i] = button;
     }
-    
     toobar.items = mutArray;
-    
-    //    [webView loadHTMLString:@"<html><h1> hello string </h1></html>" baseURL:nil];
-    //    NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:nil];
-    
     [self.view addSubview:webView];
     [self.view addSubview:toobar];
     diretories = [self readDir];
     
-    
     if ([diretories count] > 0) [self loadHomepage:diretories[0]];
-    self.fs = [[fs_ios alloc] init];
+    fs = [[fs_ios alloc] init];
+
+    kfs=[[kfs_ios alloc ] init ];
 
 }
 int GlobalInt = 1000;
@@ -75,76 +66,11 @@ void (^logme)(NSString *) = ^(NSString *string){
     NSLog(@"%@", string);
 };
 
-NSString *(^ios_readBuffer)(NSString *, int, int) = ^(NSString *fullname, int start, int size) {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *file = [documentsDirectory stringByAppendingPathComponent:fullname];
-    
-    NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:file];
-    [fileHandle seekToFileOffset:start];
-    NSData *inputData = [fileHandle readDataOfLength:size];
-    NSString *contentString = [[NSString alloc] initWithData:inputData encoding:NSUTF8StringEncoding];
-    return contentString;
-};
-/*
-NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *file = [documentsDirectory stringByAppendingPathComponent:fullname];
-    NSData *content = [NSData dataWithContentsOfFile:file];
-    NSString *contentString = [[NSString alloc] initWithData:content encoding:NSUTF8StringEncoding];
-    return contentString;
-};
-*/
-NSNumber *(^ios_writeFileSync)(NSString *, NSString *, NSString *) = ^(NSString *fn, NSString *str, NSString *enc) {
-    
-    fs_ios *fs=[[fs_ios alloc ] init ];
-    [fs setRoot:root];
-    return [fs writeFileSync:fn str:str enc:enc];
-    //[fs dealloc];
-    
-    //return [NSNumber numberWithInt:0];
-};
-
-NSString *(^ios_readFileSync)(NSString *, NSString *) = ^(NSString *fn, NSString *enc) {
-    fs_ios *fs=[[fs_ios alloc ] init ];
-    [fs setRoot:root];
-    return [fs readFileSync:fn enc:enc];
-};
-
-NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
-    kfs_ios *kfs=[[kfs_ios alloc ] init ];
-    [kfs setRoot:root];
-    return [kfs readSignature:par];
-};
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-- (void)writeFile:(NSString *)filename withExt:(NSString *)ext {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    
-    
-    NSString *txtPath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", filename, ext]];
-    
-    //    if ([fileManager fileExistsAtPath:txtPath] == YES) {
-    //        [fileManager removeItemAtPath:txtPath error:&error];
-    //
-    //        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:filename ofType:ext];
-    //        [fileManager copyItemAtPath:resourcePath toPath:txtPath error:&error];
-    //    }
-    if ([fileManager fileExistsAtPath:txtPath] == NO) {
-        //copy from resource to user App Documents folder if not file there
-        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:filename ofType:ext];
-        [fileManager copyItemAtPath:resourcePath toPath:txtPath error:&error];
-    }
-}
-
 - (NSArray *)readDir {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
@@ -161,13 +87,22 @@ NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
         dirs[i] = [urlString substringWithRange:newRange];
     }
     
-    //    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    //    NSString *documentsDirectory = [paths objectAtIndex:0];
-    //    NSString *htmlFile = [documentsDirectory stringByAppendingPathComponent:fullname];
-    //    return [NSData dataWithContentsOfFile:htmlFile];
     return dirs;
 }
+- (void)buttonTapped:(UIBarButtonItem *)button {
+    [self loadHomepage:diretories[button.tag]];
+}
 
+NSNumber *(^ios_writeFileSync)(NSString *, NSString *, NSString *) = ^(NSString *fn, NSString *str, NSString *enc) {
+    return [fs writeFileSync:fn str:str enc:enc];
+};
+NSString *(^ios_readFileSync)(NSString *, NSString *) = ^(NSString *fn, NSString *enc) {
+    return [fs readFileSync:fn enc:enc];
+};
+NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
+    
+    return [kfs readSignature:par];
+};
 - (void) fs_injectJavascriptInterface:(JSContext*) js  {
     js[@"ios_writeFileSync"]=ios_writeFileSync;
     js[@"ios_readFileSync"]=ios_readFileSync;
@@ -176,13 +111,12 @@ NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
 
 - (void) kfs_injectJavascriptInterface:(JSContext*) js  {
     js[@"ios_readSignature"]=ios_readSignature;
-    //js[@"ios_readFileSync"]=ios_readFileSync;
 }
 
 - (void)loadHomepage:(NSString *)appName {
     NSError* error;
     
-    root=appName;
+    [kfs setRoot:appName],[fs setRoot:appName];
     
     NSString *baseURL = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", appName]];
     
@@ -194,9 +128,6 @@ NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
     baseURL = [NSString stringWithFormat:@"file:/%@//", baseURL];
     
     NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
-    //    NSString* path = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html"];
-    
-    
     if (webView) {
         [webView removeFromSuperview];
         webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, 44)];
@@ -209,19 +140,10 @@ NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
     }
     
     [webView loadHTMLString:html baseURL:[NSURL URLWithString:baseURL]];
-
-    //[self injectJavascriptInterface:js];
-    //    NSData *htmlData = [self readFile:@"index.html"];
-    //    [webView loadData:htmlData MIMEType:@"text/html" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-//    JSContext *js = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
-//    JSValue *thingValue = js[@"test"];
-//    NSLog(@"jsvalue %@", thingValue);
 }
 
-- (void)buttonTapped:(UIBarButtonItem *)button {
-    [self loadHomepage:diretories[button.tag]];
-}
+
 @end
