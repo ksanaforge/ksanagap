@@ -15,7 +15,11 @@
 
 
 @interface ViewController () <UIWebViewDelegate> {
-    UIWebView *theWebView;
+    UIWebView *webView;
+    UIToolbar *toobar;
+    UIBarButtonItem *menuButton;
+    NSArray *buttons;
+    NSArray *diretories;
 }
 
 @property (nonatomic, readwrite, strong) JSContext *js;
@@ -23,27 +27,36 @@
 @end
 
 @implementation ViewController
-            
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    UIButton *refreshButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 44 - 20, 20, 44, 44)];
-    [refreshButton setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateNormal];
-    [refreshButton addTarget:self action:@selector(refresh) forControlEvents:UIControlEventTouchDown];
-    [self writeFile:@"index" withExt:@"html"];
-    [self writeFile:@"build" withExt:@"js"];
-    [self writeFile:@"test" withExt:@"txt"];
-    theWebView = [[UIWebView alloc] initWithFrame:self.view.bounds];
-    theWebView.delegate = self;
-//    [webView loadHTMLString:@"<html><h1> hello string </h1></html>" baseURL:nil];
-//    NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:nil];
     
-    NSData *htmlData = [self readFile:@"index.html"];
-    [theWebView loadData:htmlData MIMEType:@"text/html" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
-    self.js = [theWebView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
-    [self injectJavascriptFunctions:self.js];
-    [self.view addSubview:theWebView];
-    [self.view addSubview:refreshButton];
+    webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, 44)];
+    webView.delegate = self;
+    
+    toobar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
+    menuButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(menuButtonTapped)];
+    
+    UIBarButtonItem *flexableItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    
+    buttons = [self readDir];
+    NSMutableArray *mutArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < [buttons count]; i++) {
+        UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithTitle:buttons[i] style:UIBarButtonItemStylePlain target:self action:@selector(buttonTapped:)];
+        button.tag = i;
+        mutArray[i] = button;
+    }
+    
+    toobar.items = mutArray;
+    
+    //    [webView loadHTMLString:@"<html><h1> hello string </h1></html>" baseURL:nil];
+    //    NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:nil];
+    
+    [self.view addSubview:webView];
+    [self.view addSubview:toobar];
+    diretories = [self readDir];
+    if ([diretories count] > 0) [self loadHomepage:diretories[0]];
 }
 
 - (void)injectJavascriptFunctions:(JSContext *)js {
@@ -92,12 +105,12 @@ NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
     
     NSString *txtPath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", filename, ext]];
     
-//    if ([fileManager fileExistsAtPath:txtPath] == YES) {
-//        [fileManager removeItemAtPath:txtPath error:&error];
-//    
-//        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:filename ofType:ext];
-//        [fileManager copyItemAtPath:resourcePath toPath:txtPath error:&error];
-//    }
+    //    if ([fileManager fileExistsAtPath:txtPath] == YES) {
+    //        [fileManager removeItemAtPath:txtPath error:&error];
+    //
+    //        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:filename ofType:ext];
+    //        [fileManager copyItemAtPath:resourcePath toPath:txtPath error:&error];
+    //    }
     if ([fileManager fileExistsAtPath:txtPath] == NO) {
         //copy from resource to user App Documents folder if not file there
         NSString *resourcePath = [[NSBundle mainBundle] pathForResource:filename ofType:ext];
@@ -105,32 +118,53 @@ NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
     }
 }
 
-- (NSData *)readFile:(NSString *)fullname {
-//    NSFileManager *fileManager = [NSFileManager defaultManager];
-//    NSError *error;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *htmlFile = [documentsDirectory stringByAppendingPathComponent:fullname];
-    return [NSData dataWithContentsOfFile:htmlFile];
+- (NSArray *)readDir {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    
+    NSString *stringPath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)objectAtIndex:0]stringByAppendingPathComponent:@""];
+    
+    NSArray *subFolders = [fileManager contentsOfDirectoryAtURL:[NSURL URLWithString:stringPath] includingPropertiesForKeys:@[] options:NSDirectoryEnumerationSkipsHiddenFiles error:&error];
+    NSMutableArray *dirs = [[NSMutableArray alloc] init];
+    for (int i = 0; i < [subFolders count]; i++) {
+        NSString *urlString = [subFolders[i] absoluteString];
+        urlString = [urlString substringWithRange:NSMakeRange(0, urlString.length - 1)];
+        NSRange range = [urlString rangeOfString:@"/" options:NSBackwardsSearch];
+        NSRange newRange = NSMakeRange(range.location + range.length, [urlString length] - range.location -1);
+        dirs[i] = [urlString substringWithRange:newRange];
+    }
+    
+    //    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    //    NSString *documentsDirectory = [paths objectAtIndex:0];
+    //    NSString *htmlFile = [documentsDirectory stringByAppendingPathComponent:fullname];
+    //    return [NSData dataWithContentsOfFile:htmlFile];
+    return dirs;
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [self reloadView:webView];
-    // ...
+- (void)loadHomepage:(NSString *)appName {
+    NSError* error;
+    
+    NSString *baseURL = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", appName]];
+    
+    NSString *htmlFile = [NSString stringWithFormat:@"%@%@", baseURL, @"/index.html"];
+    
+    baseURL = [baseURL stringByReplacingOccurrencesOfString:@"/" withString:@"//"];
+    baseURL = [baseURL stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
+    
+    baseURL = [NSString stringWithFormat:@"file:/%@//", baseURL];
+    
+    NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
+    //    NSString* path = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html"];
+    [webView loadHTMLString:html baseURL:[NSURL URLWithString:baseURL]];
+    
+    
+    //    NSData *htmlData = [self readFile:@"index.html"];
+    //    [webView loadData:htmlData MIMEType:@"text/html" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
+    self.js = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+    [self injectJavascriptFunctions:self.js];
 }
 
-- (void)reloadView:(UIWebView *)webView {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *jsFilePath = [documentsDirectory stringByAppendingPathComponent:@"build.js"];
-    NSURL *jsURL = [NSURL fileURLWithPath:jsFilePath];
-    NSString *javascriptCode = [NSString stringWithContentsOfFile:jsURL.path encoding:NSUTF8StringEncoding error:nil];
-    [webView stringByEvaluatingJavaScriptFromString:javascriptCode];
+- (void)buttonTapped:(UIBarButtonItem *)button {
+    [self loadHomepage:diretories[button.tag]];
 }
-
-// helper method
-- (void)refresh {
-    [self reloadView:theWebView];
-}
-
 @end
