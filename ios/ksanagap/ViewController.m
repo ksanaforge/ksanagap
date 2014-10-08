@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 #import <JavaScriptCore/JavaScriptCore.h>
+#import "fs_ios.h"
+#import "kfs_ios.h"
 
 @protocol DemoJSExports <JSExport>
 -(void)jsLog:(NSString*)msg;
@@ -20,11 +22,15 @@
     UIBarButtonItem *menuButton;
     NSArray *buttons;
     NSArray *diretories;
+
 }
 
 @property (nonatomic, readwrite, strong) JSContext *js;
-
+@property (nonatomic, readwrite, strong) fs_ios *fs;
+@property (nonatomic, readwrite, strong) kfs_ios *kfs;
 @end
+
+NSString *root;
 
 @implementation ViewController
 
@@ -56,13 +62,11 @@
     [self.view addSubview:webView];
     [self.view addSubview:toobar];
     diretories = [self readDir];
+    
+    
     if ([diretories count] > 0) [self loadHomepage:diretories[0]];
-}
+    self.fs = [[fs_ios alloc] init];
 
-- (void)injectJavascriptFunctions:(JSContext *)js {
-    js[@"ios_readFileSync"] = ios_readFileSync;
-    js[@"ios_readBuffer"] = ios_readBuffer;
-    js[@"log"] = logme;
 }
 int GlobalInt = 1000;
 
@@ -82,7 +86,7 @@ NSString *(^ios_readBuffer)(NSString *, int, int) = ^(NSString *fullname, int st
     NSString *contentString = [[NSString alloc] initWithData:inputData encoding:NSUTF8StringEncoding];
     return contentString;
 };
-
+/*
 NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -90,6 +94,28 @@ NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
     NSData *content = [NSData dataWithContentsOfFile:file];
     NSString *contentString = [[NSString alloc] initWithData:content encoding:NSUTF8StringEncoding];
     return contentString;
+};
+*/
+NSNumber *(^ios_writeFileSync)(NSString *, NSString *, NSString *) = ^(NSString *fn, NSString *str, NSString *enc) {
+    
+    fs_ios *fs=[[fs_ios alloc ] init ];
+    [fs setRoot:root];
+    return [fs writeFileSync:fn str:str enc:enc];
+    //[fs dealloc];
+    
+    //return [NSNumber numberWithInt:0];
+};
+
+NSString *(^ios_readFileSync)(NSString *, NSString *) = ^(NSString *fn, NSString *enc) {
+    fs_ios *fs=[[fs_ios alloc ] init ];
+    [fs setRoot:root];
+    return [fs readFileSync:fn enc:enc];
+};
+
+NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
+    kfs_ios *kfs=[[kfs_ios alloc ] init ];
+    [kfs setRoot:root];
+    return [kfs readSignature:par];
 };
 
 - (void)didReceiveMemoryWarning {
@@ -102,6 +128,7 @@ NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
+    
     
     NSString *txtPath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", filename, ext]];
     
@@ -141,8 +168,21 @@ NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
     return dirs;
 }
 
+- (void) fs_injectJavascriptInterface:(JSContext*) js  {
+    js[@"ios_writeFileSync"]=ios_writeFileSync;
+    js[@"ios_readFileSync"]=ios_readFileSync;
+}
+
+
+- (void) kfs_injectJavascriptInterface:(JSContext*) js  {
+    js[@"ios_readSignature"]=ios_readSignature;
+    //js[@"ios_readFileSync"]=ios_readFileSync;
+}
+
 - (void)loadHomepage:(NSString *)appName {
     NSError* error;
+    
+    root=appName;
     
     NSString *baseURL = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", appName]];
     
@@ -155,13 +195,30 @@ NSString *(^ios_readFileSync)(NSString *) = ^(NSString *fullname) {
     
     NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
     //    NSString* path = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html"];
+    
+    
+    if (webView) {
+        [webView removeFromSuperview];
+        webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, 44)];
+        webView.delegate = self;
+        [self.view addSubview:webView];
+        JSContext *js = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+        
+        [self kfs_injectJavascriptInterface:js];
+        [self fs_injectJavascriptInterface:js];
+    }
+    
     [webView loadHTMLString:html baseURL:[NSURL URLWithString:baseURL]];
-    
-    
+
+    //[self injectJavascriptInterface:js];
     //    NSData *htmlData = [self readFile:@"index.html"];
     //    [webView loadData:htmlData MIMEType:@"text/html" textEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
-    self.js = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
-    [self injectJavascriptFunctions:self.js];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+//    JSContext *js = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+//    JSValue *thingValue = js[@"test"];
+//    NSLog(@"jsvalue %@", thingValue);
 }
 
 - (void)buttonTapped:(UIBarButtonItem *)button {

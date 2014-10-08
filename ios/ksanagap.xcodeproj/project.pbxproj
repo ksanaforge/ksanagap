@@ -17,6 +17,8 @@
 		BA85B15C19DBE05B00FF042F /* ksanagapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA85B15B19DBE05B00FF042F /* ksanagapTests.m */; };
 		BA85B16619DBE0ED00FF042F /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = BA85B16519DBE0ED00FF042F /* index.html */; };
 		BA85B16819DBEB7400FF042F /* build.js in Resources */ = {isa = PBXBuildFile; fileRef = BA85B16719DBEB7400FF042F /* build.js */; };
+		BAE6FF3919E544FE002A1E54 /* fs_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE6FF3819E544FE002A1E54 /* fs_ios.m */; };
+		BAE6FF4519E5674E002A1E54 /* kfs_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE6FF4419E5674E002A1E54 /* kfs_ios.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,10 @@
 		BA85B15B19DBE05B00FF042F /* ksanagapTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ksanagapTests.m; sourceTree = "<group>"; };
 		BA85B16519DBE0ED00FF042F /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		BA85B16719DBEB7400FF042F /* build.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = build.js; sourceTree = "<group>"; };
+		BAE6FF3719E544FE002A1E54 /* fs_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fs_ios.h; sourceTree = "<group>"; };
+		BAE6FF3819E544FE002A1E54 /* fs_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fs_ios.m; sourceTree = "<group>"; };
+		BAE6FF4319E5674E002A1E54 /* kfs_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kfs_ios.h; sourceTree = "<group>"; };
+		BAE6FF4419E5674E002A1E54 /* kfs_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kfs_ios.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +109,10 @@
 				BA85B14719DBE05B00FF042F /* AppDelegate.m */,
 				BA85B14919DBE05B00FF042F /* ViewController.h */,
 				BA85B14A19DBE05B00FF042F /* ViewController.m */,
+				BAE6FF3719E544FE002A1E54 /* fs_ios.h */,
+				BAE6FF3819E544FE002A1E54 /* fs_ios.m */,
+				BAE6FF4319E5674E002A1E54 /* kfs_ios.h */,
+				BAE6FF4419E5674E002A1E54 /* kfs_ios.m */,
 				BA85B16519DBE0ED00FF042F /* index.html */,
 				BA85B16719DBEB7400FF042F /* build.js */,
 				BA323D0219DC1E5400F66BB8 /* test.txt */,
@@ -256,9 +266,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAE6FF3919E544FE002A1E54 /* fs_ios.m in Sources */,
 				BA85B14B19DBE05B00FF042F /* ViewController.m in Sources */,
 				BA85B14819DBE05B00FF042F /* AppDelegate.m in Sources */,
 				BA85B14519DBE05B00FF042F /* main.m in Sources */,
+				BAE6FF4519E5674E002A1E54 /* kfs_ios.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
