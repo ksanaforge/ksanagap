@@ -6,7 +6,7 @@
 @implementation kfs_ios {
     NSString *rootPath;
     NSMutableDictionary *opened;
-    int fileopened;
+    int32_t fileopened;
 }
 - (id)init {
     self = [super init];
@@ -27,14 +27,14 @@
     return file;
 }
 
--(NSFileHandle)handleByTag:(int)tag {
+-(NSFileHandle)handleByTag:(int32_t)tag {
     NSArray * values=[opened allValues];
     for (id h in values) {
         if (h.tag==tag) return values;
     }
     return nil;
 }
--(NSString*)filenameByTag:(int)tag {
+-(NSString*)filenameByTag:(int32_t)tag {
     for (id fn in opened) {
         if (opened[fn].tag==tag) return fn;
     }
@@ -75,7 +75,7 @@
     if (!h) return nil;
 
     [h seekToFileOffset:[pos toUInt32]];
-    NSData *data = [handle.intValue readDataOfLength:1];
+    NSData *data = [h readDataOfLength:1];
     char c = *(char*)([data bytes]);
     return [NSString stringWithFormat:@"%c" , c];
 }
@@ -87,7 +87,7 @@
     [h seekToFileOffset:[pos toUInt32]];
     NSData *data = [h readDataOfLength:4];
 
-    int i = *(int*)([data bytes]);
+    int32_t i = *(int*)([data bytes]);
     return [NSNumber numberWithInt:i];
 }
 
@@ -97,7 +97,7 @@
     [h seekToFileOffset:[pos toUInt32]];
     NSData *data = [h readDataOfLength:4];
 
-    unsigned int i = *(unsigned int*)([data bytes]);
+    uint32_t i = *(unsigned int*)([data bytes]);
     return [NSNumber numberWithUnsignedInt:i];
 }
 
@@ -108,7 +108,7 @@
     [h seekToFileOffset:[pos toUInt32]];
     NSData *data = [h readDataOfLength:1];
 
-    unsigned int i =(unsigned int)(*(char*)([data bytes]));
+    uint8_t i =(uint8_t)(*(uint8_t*)([data bytes]));
     return [NSNumber numberWithUnsignedInt:i];
 }
 
@@ -135,24 +135,24 @@
     NSData *data = [h readDataOfLength:[size toUInt32]];
 
     NSMutableArray* out=[NSMutableArray arrayWithCapacity [size toUInt32]];
-    unsigned char * c = (unsigned char*)([data bytes]);
+    uint8_t * c = (uint8_t*)([data bytes]);
     for(i=0;i<[size toUInt32];i++) {
-        [out addObject: [NSNumber numberWithUnsignedInt:(unsigned int)(*(c+i))];
+        [out addObject: [NSNumber numberWithUnsignedInt:*(c+i)];
     }
     return out;
 }
 
--(NSDictionary*) unpack_int:(unsigned char*)data length:(int)length count:(int)count reset:(bool)reset) {
+-(NSDictionary*) unpack_int:(uint8_t*)data length:(int)length count:(int)count reset:(bool)reset) {
     NSMutableArray* out=[NSMutableArray arrayWithCapacity:count];
     int adv = 0, b = 0 , n=0;
     do {
         int S = 0;
         do {
-            n += ( (int)(A[a]) & 0x7f) << S;
+            n += ( A[a] & 0x7f) << S;
             S += 7;
             adv++; 
             if (a>=length) break;
-        } while (( (int)(A[a]) & 0x80)!=0 );
+        } while (( A[a] & 0x80)!=0 );
 
         [out addObject: [NSNumber numberWithUnsignedInt:n];
         if (reset) n=0;
@@ -170,7 +170,7 @@
     [h seekToFileOffset:[pos toUInt32]];
     NSData *data = [h readDataOfLength:[size toUInt32]];
 
-    unsigned char * c = (unsigned char*)([data bytes]);
+    uint8_t * c = (uint8_t*)([data bytes]);
     NSDictionary *r=[unpack_int data:c length:[size toUInt32] count:[count toUInt32] reset:[reset toBool] ];
     return r;
 }
@@ -186,17 +186,17 @@
 
     int unit=[unitsz toUInt32];
     if (unit==1) {
-        unsigned char* b1 = (unsigned char*)([data bytes]);
+        uint8_t* b1 = (uint8_t*)([data bytes]);
         for(i=0;i<[size toUInt32];i++) {
-            [out addObject: [NSNumber numberWithUnsignedInt:(unsigned int)(*(b1+i))];
+            [out addObject: [NSNumber numberWithUnsignedInt:*(b1+i)];
         }
     } else if (unit==2) {
-        unsigned short* b2 = (unsigned short*)([data bytes]);
+        uint16_t* b2 = (uint16_t*)([data bytes]);
         for(i=0;i<[size toUInt32];i++) {
-            [out addObject: [NSNumber numberWithUnsignedInt:(unsigned int)(*(b2+i))];
+            [out addObject: [NSNumber numberWithUnsignedInt:*(b2+i)];
         }
     } else if (unit==4) {
-        unsigned int* b4 = (unsigned int*)([data bytes]);
+        uint32_t* b4 = (uint32_t*)([data bytes]);
         for(i=0;i<[size toUInt32];i++) {
             [out addObject: [NSNumber numberWithUnsignedInt:*(b4+i)];
         }
