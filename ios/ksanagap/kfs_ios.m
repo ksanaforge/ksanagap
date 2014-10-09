@@ -184,20 +184,21 @@
 
     NSMutableArray* out=[NSMutableArray arrayWithCapacity [size toUInt32]];
 
-    int unit=[unitsz toUInt32];
+    uint32_t unit=[unitsz toUInt32];
+    uint32_t sz=[size toUInt32];
     if (unit==1) {
         uint8_t* b1 = (uint8_t*)([data bytes]);
-        for(i=0;i<[size toUInt32];i++) {
+        for(i=0;i<sz;i++) {
             [out addObject: [NSNumber numberWithUnsignedInt:*(b1+i)];
         }
     } else if (unit==2) {
         uint16_t* b2 = (uint16_t*)([data bytes]);
-        for(i=0;i<[size toUInt32];i++) {
+        for(i=0;i<sz;i++) {
             [out addObject: [NSNumber numberWithUnsignedInt:*(b2+i)];
         }
     } else if (unit==4) {
         uint32_t* b4 = (uint32_t*)([data bytes]);
-        for(i=0;i<[size toUInt32];i++) {
+        for(i=0;i<sz;i++) {
             [out addObject: [NSNumber numberWithUnsignedInt:*(b4+i)];
         }
     } else {
