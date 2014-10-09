@@ -1,17 +1,14 @@
 
 #import <Foundation/Foundation.h>  
 @import JavaScriptCore;  
-//@protocol FSObjectExport <JSExport>
-//-(void)log:(NSString*)string;  
+@protocol FSObjectExport <JSExport>
 
-//@end
+JSExportAs(writeFileSync, -(NSNumber*)writeFileSync:(NSString*)fn str:(NSString*)str enc:(NSString*)enc);
+JSExportAs(readFileSync,  -(NSString*)readFileSync:(NSString*)fn enc:(NSString*)enc);
+
+@end
   
 @interface fs_ios: NSObject // <JSExport>
 -(void) setRoot : (NSString*)root;
--(NSNumber*)writeFileSync:(NSString*)fn str:(NSString*)str enc:(NSString*)enc;
-
--(NSString*)readFileSync:(NSString*)fn enc:(NSString*)enc;
-
-+ (void)print;
-
+-(void) finalize ;
 @end  

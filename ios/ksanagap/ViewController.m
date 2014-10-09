@@ -22,7 +22,6 @@
     UIBarButtonItem *menuButton;
     NSArray *buttons;
     NSArray *diretories;
-
 }
 
 @property (nonatomic, readwrite, strong) JSContext *js;
@@ -30,16 +29,17 @@
 
 kfs_ios *kfs;
 fs_ios *fs;
+int TOOLBARH=44;
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, 44)];
+    webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, TOOLBARH)];
     webView.delegate = self;
     
-    toobar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
+    toobar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, TOOLBARH)];
     
     buttons = [self readDir];
     NSMutableArray *mutArray = [[NSMutableArray alloc] init];
@@ -55,17 +55,8 @@ fs_ios *fs;
     
     if ([diretories count] > 0) [self loadHomepage:diretories[0]];
     fs = [[fs_ios alloc] init];
-
-    kfs=[[kfs_ios alloc ] init ];
-
+    kfs= [[kfs_ios alloc] init];
 }
-int GlobalInt = 1000;
-
-int (^getGlobalInt)(void) = ^{ return GlobalInt; };
-void (^logme)(NSString *) = ^(NSString *string){
-    NSLog(@"%@", string);
-};
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -92,16 +83,12 @@ void (^logme)(NSString *) = ^(NSString *string){
 - (void)buttonTapped:(UIBarButtonItem *)button {
     [self loadHomepage:diretories[button.tag]];
 }
-
+/*
 NSNumber *(^ios_writeFileSync)(NSString *, NSString *, NSString *) = ^(NSString *fn, NSString *str, NSString *enc) {
     return [fs writeFileSync:fn str:str enc:enc];
 };
 NSString *(^ios_readFileSync)(NSString *, NSString *) = ^(NSString *fn, NSString *enc) {
     return [fs readFileSync:fn enc:enc];
-};
-NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
-    
-    return [kfs readSignature:par];
 };
 - (void) fs_injectJavascriptInterface:(JSContext*) js  {
     js[@"ios_writeFileSync"]=ios_writeFileSync;
@@ -109,10 +96,7 @@ NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
 }
 
 
-- (void) kfs_injectJavascriptInterface:(JSContext*) js  {
-    js[@"ios_readSignature"]=ios_readSignature;
-}
-
+*/
 - (void)loadHomepage:(NSString *)appName {
     NSError* error;
     
@@ -127,16 +111,19 @@ NSString *(^ios_readSignature)(NSString *) = ^(NSString *par) {
     
     baseURL = [NSString stringWithFormat:@"file:/%@//", baseURL];
     
+
     NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
     if (webView) {
         [webView removeFromSuperview];
-        webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, 44)];
+        webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, TOOLBARH)];
         webView.delegate = self;
         [self.view addSubview:webView];
-        JSContext *js = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
         
-        [self kfs_injectJavascriptInterface:js];
-        [self fs_injectJavascriptInterface:js];
+        [fs finalize], [kfs finalize]; //close all file handle
+        
+        JSContext *js = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+        js[@"fs"]=fs;
+        js[@"kfs"]=kfs;
     }
     
     [webView loadHTMLString:html baseURL:[NSURL URLWithString:baseURL]];
