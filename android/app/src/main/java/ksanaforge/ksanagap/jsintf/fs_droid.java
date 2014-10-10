@@ -42,6 +42,10 @@ public class fs_droid {
         return (f.exists() && !f.isDirectory());
     }
     @JavascriptInterface
+    public String readFileSync(String filename) {
+        return readFileSync(filename,"utf8");
+    }
+    @JavascriptInterface
     public String readFileSync(String filename,String encoding){
         try{
             return getStringFromFile(rootpath+filename);
@@ -63,6 +67,9 @@ public class fs_droid {
             return 0;
         }
     }
-
+    @JavascriptInterface
+    public int writeFileSync(String fname, String content) {
+        return writeFileSync(fname,content,"utf8");
+    }
 }
 
