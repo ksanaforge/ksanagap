@@ -6,11 +6,13 @@
 @implementation kfs_ios {
     NSString *rootPath;
     NSMutableDictionary *opened;
+    NSMutableDictionary *opened_fid;
     int32_t fileopened;
 }
 - (id)init {
     self = [super init];
     opened=[[NSMutableDictionary alloc] init];
+    opened_fid=[[NSMutableDictionary alloc] init];
     fileopened=0;
     return self;
 }
@@ -27,51 +29,59 @@
     return file;
 }
 
--(NSFileHandle)handleByTag:(int32_t)tag {
-    NSArray * values=[opened allValues];
-    for (id h in values) {
-        if (h.tag==tag) return values;
+-(NSFileHandle*)handleByFid:(uint32_t)fid {
+    for (id fn in opened) {
+        if ((uint32_t)[opened_fid objectForKey :fn]==fid) {
+            return [opened objectForKey fn];
+        };
     }
     return nil;
 }
--(NSString*)filenameByTag:(int32_t)tag {
-    for (id fn in opened) {
-        if (opened[fn].tag==tag) return fn;
+-(NSString*)filenameByFid:(int32_t)fid {
+    for (id fn in opened_fid) {
+        if ((uint32_t)[opened_fid objectForKey :fn]==fid) return fn;
     }
     return nil;
 }
 
 -(void) finalize {
     for (id fn in opened) {
-        [opened[fh] closeFile];
-        [opened removeObjectForKey:h];
+        [[opened objectForKey:fn] closeFile];
+        [opened removeObjectForKey:fn];
     }
+    fileopened=0;
 }
 
 // for Javascripts
 -(NSNumber *)open:(NSString*)fn {
     NSFileHandle* handle = [opened objectForKey:fn];
-    if (!handle)
-        NSString *fullpath=[getFullPath fn];
+    NSString *fullpath=[self getFullPath:fn];
+    if (!handle) {
         handle=[NSFileHandle fileHandleForReadingAtPath:fullpath];
-        handle.tag=++fileopened;
-        opens[fn] = handle;
+        if (handle) {
+            [opened setObject :handle forKey:fn];
+            fileopened++;
+            [opened_fid setObject :(void*)fileopened forKey:fn];
+        } else {
+            return [NSNumber numberWithInt:0];
+        }
     }
-    return handle.tag;
+    return [NSNumber numberWithInt:fileopened];
 }
 
 -(NSNumber*)close:(NSNumber*)handle {
-    NSString* fn=[self filenameByTag tag:handle];
+    NSString* fn=[self filenameByFid :handle.intValue];
     if (fn) {
-        [opened[fn] closeFile];
+        [[opened objectForKey:fn] closeFile];
         [opened removeObjectForKey:fn];
+        [opened_fid removeObjectForKey:fn];
         return [NSNumber numberwithbool:true];
     }
     return [NSNumber numberwithbool:false];
 }
 
 -(NSString *)readSignature:(NSNumber *)handle pos:(JSValue *)pos {
-    NSFileHandle h=[self handleByTag tag:handle];
+    NSFileHandle *h=[self handleByFid tag:handle];
     if (!h) return nil;
 
     [h seekToFileOffset:[pos toUInt32]];
@@ -81,7 +91,7 @@
 }
 
 -(NSNumber *)readInt32:(NSNumber *)handle pos:(JSValue *)pos {
-    NSFileHandle h=[self handleByTag tag:handle];
+    NSFileHandle *h=[self handleByFid tag:handle];
     if (!h) return nil;
 
     [h seekToFileOffset:[pos toUInt32]];
@@ -92,7 +102,7 @@
 }
 
 -(NSNumber *)readUInt32:(NSNumber *)handle pos:(JSValue *)pos {
-    NSFileHandle h=[self handleByTag tag:handle];
+    NSFileHandle *h=[self handleByFid tag:handle];
     if (!h) return nil;
     [h seekToFileOffset:[pos toUInt32]];
     NSData *data = [h readDataOfLength:4];
@@ -102,7 +112,7 @@
 }
 
 -(NSNumber *)readUInt8:(NSNumber *)handle pos:(JSValue *)pos {
-    NSFileHandle h=[self handleByTag tag:handle];
+    NSFileHandle *h=[self handleByFid tag:handle];
     if (!h) return nil;
 
     [h seekToFileOffset:[pos toUInt32]];
@@ -128,7 +138,7 @@
 }
 
 -(NSArray *)readBuffer:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size {
-    NSFileHandle h=[self handleByTag tag:handle];
+    NSFileHandle *h=[self handleByFid tag:handle];
     if (!h) return nil;
 
     [h seekToFileOffset:[pos toUInt32]];
@@ -164,7 +174,7 @@
 }
 
 -(NSDictionary *)readBuf_packedint:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size : count(JSValue *)count : reset(JSValue *)reset {
-    NSFileHandle h=[self handleByTag tag:handle];
+    NSFileHandle *h=[self handleByFid tag:handle];
     if (!h) return nil;
 
     [h seekToFileOffset:[pos toUInt32]];
@@ -176,7 +186,7 @@
 }
 
 -(NSArray *)readFixedArray:(NSNumber *)handle pos:(JSValue *)pos count:(JSValue *)count unitsz:(JSValue *)unitsz {
-    NSFileHandle h=[self handleByTag tag:handle];
+    NSFileHandle *h=[self handleByFid tag:handle];
     if (!h) return nil;
 
     [h seekToFileOffset:[pos toUInt32]];
@@ -186,20 +196,21 @@
 
     uint32_t unit=[unitsz toUInt32];
     uint32_t sz=[size toUInt32];
+    int i;
     if (unit==1) {
         uint8_t* b1 = (uint8_t*)([data bytes]);
         for(i=0;i<sz;i++) {
-            [out addObject: [NSNumber numberWithUnsignedInt:*(b1+i)];
+            [out addObject: [NSNumber numberWithUnsignedInt:*(b1+i)]];
         }
     } else if (unit==2) {
         uint16_t* b2 = (uint16_t*)([data bytes]);
         for(i=0;i<sz;i++) {
-            [out addObject: [NSNumber numberWithUnsignedInt:*(b2+i)];
+            [out addObject: [NSNumber numberWithUnsignedInt:*(b2+i)]];
         }
     } else if (unit==4) {
         uint32_t* b4 = (uint32_t*)([data bytes]);
         for(i=0;i<sz;i++) {
-            [out addObject: [NSNumber numberWithUnsignedInt:*(b4+i)];
+            [out addObject: [NSNumber numberWithUnsignedInt:*(b4+i)]];
         }
     } else {
         //throw unsuppoted unit sz
@@ -215,7 +226,8 @@
         s=[readULE16String handle:handle pos:pos size:sz];
     }
       
-    return [s componentsSeparatedByString:@"\0"];
+    NSArray *out= [s componentsSeparatedByString:@"\0"];
+    return out;
 }
 
 @end
