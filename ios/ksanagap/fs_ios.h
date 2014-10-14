@@ -8,7 +8,7 @@ JSExportAs(readFileSync,  -(NSString*)readFileSync:(NSString*)fn enc:(NSString*)
 JSExportAs(existsSync,    -(NSNumber*)existsSync:(NSString*)fn);
 @end
   
-@interface fs_ios: NSObject // <JSExport>
+@interface fs_ios: NSObject <FSObjectExport>
 -(void) setRoot : (NSString*)root;
 -(void) finalize ;
 @end  

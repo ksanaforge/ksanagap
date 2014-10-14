@@ -53,9 +53,10 @@ int TOOLBARH=44;
     [self.view addSubview:toobar];
     diretories = [self readDir];
     
-    if ([diretories count] > 0) [self loadHomepage:diretories[0]];
     fs = [[fs_ios alloc] init];
     kfs= [[kfs_ios alloc] init];
+    if ([diretories count] > 0) [self loadHomepage:diretories[0]];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -83,20 +84,7 @@ int TOOLBARH=44;
 - (void)buttonTapped:(UIBarButtonItem *)button {
     [self loadHomepage:diretories[button.tag]];
 }
-/*
-NSNumber *(^ios_writeFileSync)(NSString *, NSString *, NSString *) = ^(NSString *fn, NSString *str, NSString *enc) {
-    return [fs writeFileSync:fn str:str enc:enc];
-};
-NSString *(^ios_readFileSync)(NSString *, NSString *) = ^(NSString *fn, NSString *enc) {
-    return [fs readFileSync:fn enc:enc];
-};
-- (void) fs_injectJavascriptInterface:(JSContext*) js  {
-    js[@"ios_writeFileSync"]=ios_writeFileSync;
-    js[@"ios_readFileSync"]=ios_readFileSync;
-}
 
-
-*/
 - (void)loadHomepage:(NSString *)appName {
     NSError* error;
     

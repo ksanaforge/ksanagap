@@ -14,6 +14,10 @@
 -(void) setRoot : (NSString*)root {
     rootPath = root;
 }
+- (id)init {
+    self = [super init];
+    return self;
+}
 -(NSString *)getFullPath :(NSString*)fn {
 	  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
