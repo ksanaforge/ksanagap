@@ -53,7 +53,7 @@
 
 -(NSNumber*) existsSync:(NSString*)fn {
     NSString* file=[self getFullPath:fn];
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fn];
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:file];
     return [NSNumber numberWithBool: fileExists];
 }
 @end  

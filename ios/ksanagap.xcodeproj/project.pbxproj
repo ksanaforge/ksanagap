@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0183485519ED342700B59903 /* ksanagap_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183485419ED342700B59903 /* ksanagap_ios.m */; };
 		9F57699719DD94590007C2EF /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F57699619DD94590007C2EF /* refresh.png */; };
 		BA323D0319DC1E5400F66BB8 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = BA323D0219DC1E5400F66BB8 /* test.txt */; };
 		BA85B14519DBE05B00FF042F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA85B14419DBE05B00FF042F /* main.m */; };
@@ -32,6 +33,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0183485319ED342700B59903 /* ksanagap_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ksanagap_ios.h; sourceTree = "<group>"; };
+		0183485419ED342700B59903 /* ksanagap_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ksanagap_ios.m; sourceTree = "<group>"; };
 		9F57699619DD94590007C2EF /* refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh.png; sourceTree = "<group>"; };
 		BA323CF619DC115C00F66BB8 /* NLContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NLContext.h; path = ../../../Nodelike/Nodelike/NLContext.h; sourceTree = "<group>"; };
 		BA323CF719DC118800F66BB8 /* pthread-fixes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "pthread-fixes.h"; path = "../../../Nodelike/libuv/include/pthread-fixes.h"; sourceTree = "<group>"; };
@@ -114,6 +117,8 @@
 				BAE6FF4319E5674E002A1E54 /* kfs_ios.h */,
 				BAE6FF4419E5674E002A1E54 /* kfs_ios.m */,
 				BA85B16519DBE0ED00FF042F /* index.html */,
+				0183485319ED342700B59903 /* ksanagap_ios.h */,
+				0183485419ED342700B59903 /* ksanagap_ios.m */,
 				BA85B16719DBEB7400FF042F /* build.js */,
 				BA323D0219DC1E5400F66BB8 /* test.txt */,
 				BA85B14C19DBE05B00FF042F /* Main.storyboard */,
@@ -269,6 +274,7 @@
 				BAE6FF3919E544FE002A1E54 /* fs_ios.m in Sources */,
 				BA85B14B19DBE05B00FF042F /* ViewController.m in Sources */,
 				BA85B14819DBE05B00FF042F /* AppDelegate.m in Sources */,
+				0183485519ED342700B59903 /* ksanagap_ios.m in Sources */,
 				BA85B14519DBE05B00FF042F /* main.m in Sources */,
 				BAE6FF4519E5674E002A1E54 /* kfs_ios.m in Sources */,
 			);

@@ -10,10 +10,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import "fs_ios.h"
 #import "kfs_ios.h"
-
-@protocol DemoJSExports <JSExport>
--(void)jsLog:(NSString*)msg;
-@end
+#import "ksanagap_ios.h"
 
 
 @interface ViewController () <UIWebViewDelegate> {
@@ -29,6 +26,7 @@
 
 kfs_ios *kfs;
 fs_ios *fs;
+ksanagap_ios *ksanagap;
 int TOOLBARH=44;
 @implementation ViewController
 
@@ -55,6 +53,7 @@ int TOOLBARH=44;
     
     fs = [[fs_ios alloc] init];
     kfs= [[kfs_ios alloc] init];
+    ksanagap= [[ksanagap_ios alloc] init];
     if ([diretories count] > 0) [self loadHomepage:diretories[0]];
     
 }
@@ -98,7 +97,7 @@ int TOOLBARH=44;
     baseURL = [baseURL stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
     
     baseURL = [NSString stringWithFormat:@"file:/%@//", baseURL];
-    
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
     NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
     if (webView) {
@@ -112,6 +111,7 @@ int TOOLBARH=44;
         JSContext *js = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
         js[@"fs"]=fs;
         js[@"kfs"]=kfs;
+        js[@"ksanagap"]=ksanagap;
     }
     
     [webView loadHTMLString:html baseURL:[NSURL URLWithString:baseURL]];

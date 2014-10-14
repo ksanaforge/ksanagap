@@ -80,7 +80,11 @@
     }
     return [NSNumber numberWithBool:false];
 }
-
+-(NSNumber *)getFileSize:(NSNumber *)handle {
+    NSFileHandle *h=[self handleByFid :handle.intValue];
+    uint64_t fileSize = [h seekToEndOfFile];
+    return [NSNumber numberWithLongLong:fileSize];
+}
 -(NSString *)readSignature:(NSNumber *)handle pos:(JSValue *)pos {
     NSFileHandle *h=[self handleByFid :handle.intValue];
     if (!h) return nil;
@@ -99,16 +103,20 @@
     NSData *data = [h readDataOfLength:4];
 
     int32_t i = *(int*)([data bytes]);
+    i=CFSwapInt32HostToBig(i);
     return [NSNumber numberWithInt:i];
 }
 
 -(NSNumber *)readUInt32:(NSNumber *)handle pos:(JSValue *)pos {
     NSFileHandle *h=[self handleByFid :handle.intValue];
     if (!h) return nil;
-    [h seekToFileOffset:[pos toUInt32]];
+    int64_t p=[pos toUInt32];
+    [h seekToFileOffset:p];
     NSData *data = [h readDataOfLength:4];
+    unsigned char *t=[data bytes];
 
     uint32_t i = *(unsigned int*)([data bytes]);
+    i=CFSwapInt32HostToBig(i);
     return [NSNumber numberWithUnsignedInt:i];
 }
 
@@ -125,8 +133,10 @@
 
 -(NSString *)readUTF8String:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size {
     NSFileHandle *h=[self handleByFid :handle.intValue];
-    [h seekToFileOffset:[pos toUInt32]];
-    NSData *data = [h readDataOfLength:[size toUInt32]];
+    uint64_t p=[pos toUInt32];
+    [h seekToFileOffset:p];
+    uint64_t sz=[size toUInt32];
+    NSData *data = [h readDataOfLength:sz];
 
     NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     return str;
@@ -140,7 +150,7 @@
     return str;
 }
 
--(NSArray *)readBuffer:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size {
+-(NSArray *)readBuf:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size {
     NSFileHandle *h=[self handleByFid :handle.intValue];
     if (!h) return nil;
 
@@ -156,7 +166,7 @@
 }
 
 -(NSDictionary*) unpack_int:(uint8_t*)data length:(int)length count:(int)count reset:(bool)reset {
-    NSMutableArray* out=[NSMutableArray arrayWithCapacity:count];
+    NSMutableArray* output=[NSMutableArray arrayWithCapacity:count];
     int adv = 0, n=0;
     do {
         int S = 0;
@@ -167,20 +177,22 @@
             if (adv>=length) break;
         } while (( data[adv] & 0x80)!=0 );
 
-        [out addObject: [NSNumber numberWithUnsignedInt:n]];
+        [output addObject: [NSNumber numberWithUnsignedInt:n]];
         if (reset) n=0;
         count--;
     } while (adv<length && count>0);
 
-    return [NSDictionary dictionaryWithObjectsAndKeys:@"data", out, 
-                                                      @"adv", [NSNumber numberWithUnsignedInt:adv],nil];
+    return [NSDictionary dictionaryWithObjectsAndKeys:output                             ,@"data",
+                                                     [NSNumber numberWithUnsignedInt:adv],@"adv",nil];
 }
 
 -(NSDictionary *)readBuf_packedint:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size  count:(JSValue *)count  reset:(JSValue *)reset {
     NSFileHandle *h=[self handleByFid :handle.intValue];    if (!h) return nil;
 
-    [h seekToFileOffset:[pos toUInt32]];
-    NSData *data = [h readDataOfLength:[size toUInt32]];
+    uint64_t p=[pos toUInt32];
+    [h seekToFileOffset:p];
+    uint64_t sz=[size toUInt32];
+    NSData *data = [h readDataOfLength:sz];
 
     uint8_t * c = (uint8_t*)([data bytes]);
     NSDictionary *r=[self unpack_int :c length:[size toUInt32] count:[count toUInt32] reset:[reset toBool] ];
