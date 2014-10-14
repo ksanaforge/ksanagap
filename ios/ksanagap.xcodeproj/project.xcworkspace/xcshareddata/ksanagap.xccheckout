@@ -12,42 +12,30 @@
 	<dict>
 		<key>7780E198A46684277B6C53D1786393EB194B54A1</key>
 		<string>https://github.com/node-app/Nodelike.git</string>
-		<key>90C3FD88F8002F902A5FDF9D64063244571F233C</key>
-		<string>https://github.com/joyent/http-parser.git</string>
 		<key>A53257B3B2CA28742EC847754735043F4176E582</key>
-		<string>https://github.com/ksanaforge/ksanagap.git</string>
+		<string>https://github.com/ksanaforge/ksanagap</string>
 		<key>BC09C09DC2853BA9B3A84860F78F2E9FD790D8C3</key>
 		<string>https://github.com/joyent/libuv.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>ksanagap/ksanagap.xcodeproj</string>
+	<string>ios/ksanagap.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>7780E198A46684277B6C53D1786393EB194B54A1</key>
 		<string>../../../../Nodelike</string>
-		<key>90C3FD88F8002F902A5FDF9D64063244571F233C</key>
-		<string>../../../../Nodelike/http-parser</string>
 		<key>A53257B3B2CA28742EC847754735043F4176E582</key>
 		<string>../../..</string>
 		<key>BC09C09DC2853BA9B3A84860F78F2E9FD790D8C3</key>
 		<string>../../../../Nodelike/libuv</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/ksanaforge/ksanagap.git</string>
+	<string>https://github.com/ksanaforge/ksanagap</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
 	<string>A53257B3B2CA28742EC847754735043F4176E582</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>90C3FD88F8002F902A5FDF9D64063244571F233C</string>
-			<key>IDESourceControlWCCName</key>
-			<string>http-parser</string>
-		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
