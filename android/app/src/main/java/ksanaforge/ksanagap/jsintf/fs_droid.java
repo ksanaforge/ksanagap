@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import android.content.Context;
+import android.provider.MediaStore;
 import android.webkit.JavascriptInterface;
 import android.util.Log;
 import java.util.Arrays;
@@ -68,8 +69,9 @@ public class fs_droid {
         }
     }
     @JavascriptInterface
-    public int writeFileSync(String fname, String content) {
+         public int writeFileSync(String fname, String content) {
         return writeFileSync(fname,content,"utf8");
     }
+
 }
 

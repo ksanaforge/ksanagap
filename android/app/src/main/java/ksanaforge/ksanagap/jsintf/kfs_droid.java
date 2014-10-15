@@ -187,4 +187,26 @@ public class kfs_droid {
         return s;
     }
 
+    @JavascriptInterface
+    public String readDir(String path) {
+        String out="";
+        if (path.startsWith(".")){
+            if (path.equals("..")) { //only allow listing parent
+                int last = rootpath.lastIndexOf("/");
+                path=rootpath.substring(0,last);
+                last = path.lastIndexOf("/");
+                path=path.substring(0,last+1);
+            } else {
+                path=rootpath;
+            }
+        } else {
+            path=rootpath+path;
+        }
+        File f = new File(path);
+        File files[] = f.listFiles();
+        for (int i=0; i < files.length; i++) {
+            out=out+files[i].getName()+"\uffff";
+        }
+        return out;
+    }
 }
