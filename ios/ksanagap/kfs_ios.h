@@ -17,6 +17,7 @@ JSExportAs(readBuf_packedint,- (NSDictionary *)readBuf_packedint:(NSNumber *)han
 JSExportAs(readFixedArray,   - (NSArray *)readFixedArray:(NSNumber *)handle pos:(JSValue *)pos  count:(JSValue *)count unitsz:(JSValue *)unitsz);
 JSExportAs(readStringArray,  - (NSString *)readStringArray:(NSNumber *)handle pos:(JSValue *)pos  size:(JSValue *)size enc:(JSValue *)enc);
 
+JSExportAs(readDir,          - (NSString*)readDir:(NSString*)path);
 @end  
 
 @interface kfs_ios: NSObject <KFSExport>

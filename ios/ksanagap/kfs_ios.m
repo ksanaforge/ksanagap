@@ -80,6 +80,41 @@
     }
     return [NSNumber numberWithBool:false];
 }
+
+-(NSString*) getFileNameOnly:(NSString*)path{
+    NSRange range = [path rangeOfString:@"/" options:NSBackwardsSearch];
+    if (range.location==path.length-1) {
+        path = [path substringWithRange:NSMakeRange(0, path.length - 1)];
+        range = [path rangeOfString:@"/" options:NSBackwardsSearch];
+    }
+
+    NSRange newRange = NSMakeRange(range.location + range.length, [path length] - range.location -1);
+    return [path substringWithRange:newRange];
+}
+
+-(NSString*)readDir:(NSString*)path{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    
+    if ([path hasPrefix:@"."]) {
+        if ([path isEqualToString:@".."]) {
+            path=@"";
+        } else {
+            path=rootPath;
+        }
+    
+    }
+    NSString *stringPath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)objectAtIndex:0]stringByAppendingPathComponent:path];
+    
+    NSArray *subFolders = [fileManager contentsOfDirectoryAtURL:[NSURL URLWithString:stringPath] includingPropertiesForKeys:@[] options:NSDirectoryEnumerationSkipsHiddenFiles error:&error];
+    NSString *dirs=@"";
+    for (int i = 0; i < [subFolders count]; i++) {
+        NSString *urlString = [subFolders[i] absoluteString];
+        urlString=[self getFileNameOnly:urlString];
+        dirs = [dirs stringByAppendingFormat:@"%@\uffff",urlString];
+    }
+    return dirs;
+};
 -(NSNumber *)getFileSize:(NSNumber *)handle {
     NSFileHandle *h=[self handleByFid :handle.intValue];
     uint64_t fileSize = [h seekToEndOfFile];
