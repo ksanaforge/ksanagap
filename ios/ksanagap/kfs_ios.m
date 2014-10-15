@@ -200,6 +200,78 @@
     return out;
 }
 
+
+void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
+    /*
+    for (int i=0;i<cnt;i++){
+        char b=*bytes++, c;
+        char B=(b>>4) &0xf;
+        if (B<9) c=B+'0'; else c=B - 10+'A' ; *chars++=c;
+        B=b&0xf;
+        if (B<9) c=B+'0'; else c=B - 10+'A' ; *chars++=c;
+    }
+     */
+
+    uint32_t *end=ints+cnt;
+    uint32_t b=0;
+    unsigned char B,c;
+    while(ints<end) {
+        b=*ints;
+        *chars++='0';
+        *chars++='x';
+        B=(b>>28)&0xF;if(B<=9) c=B+'0';else c=B-10+'A'; *chars++=c;
+        B=(b>>24)&0xF;if(B<=9) c=B+'0';else c=B-10+'A'; *chars++=c;
+        B=(b>>20)&0xF;if(B<=9) c=B+'0';else c=B-10+'A'; *chars++=c;
+        B=(b>>16)&0xF;if(B<=9) c=B+'0';else c=B-10+'A'; *chars++=c;
+        B=(b>>12)&0xF;if(B<=9) c=B+'0';else c=B-10+'A'; *chars++=c;
+        B=(b>>8)&0xF;if(B<=9) c=B+'0';else c=B-10+'A'; *chars++=c;
+        B=(b>>4)&0xF;if(B<=9) c=B+'0';else c=B-10+'A'; *chars++=c;
+        B=(b>>0)&0xF;if(B<=9) c=B+'0';else c=B-10+'A'; *chars++=c;
+        *chars++=',';
+        ints++;
+    }
+}
+-(NSDictionary*) unpack_int_hex:(uint8_t*)data length:(int)length count:(int)count reset:(bool)reset {
+    //NSMutableArray* output=[NSMutableArray arrayWithCapacity:count];
+    
+    NSLog(@"unpack hex start");
+    uint32_t *p= (uint32_t*)malloc(count*4);
+    
+    uint32_t adv = 0, n=0 , cnt=0;
+    do {
+        int S = 0;
+        do {
+            n += ( data[adv] & 0x7f) << S;
+            S += 7;
+            adv++;
+            if (adv>=length) break;
+        } while (( data[adv] & 0x80)!=0 );
+        
+        
+        //[output addObject: [NSNumber numberWithUnsignedInt:n]];
+        //[outputstr appendFormat:@"%i,",n];
+        //n=CFSwapInt32HostToBig(n);
+        *(p+cnt)=n;
+        cnt++;
+        if (reset) n=0;
+        count--;
+    } while (adv<length && count>0);
+    
+    unsigned char *r=(unsigned char*)malloc(cnt*11+1);
+
+    hex_dump((uint32_t*)p, r , cnt);
+    free(p);
+
+    //NSString *outputstr=[NSString stringWithCString:r];
+    //free(r);
+    NSString *outputstr=[[NSString alloc] initWithBytesNoCopy:r length:cnt*11 encoding:1 freeWhenDone:YES];
+    
+    NSLog(@"unpack hex ends");
+    return [NSDictionary dictionaryWithObjectsAndKeys:outputstr ,@"data",
+            [NSNumber numberWithUnsignedInt:adv],@"adv",nil];
+}
+
+
 -(NSDictionary*) unpack_int:(uint8_t*)data length:(int)length count:(int)count reset:(bool)reset {
     //NSMutableArray* output=[NSMutableArray arrayWithCapacity:count];
     NSMutableString *outputstr = [[NSMutableString alloc]init];
@@ -235,7 +307,7 @@
     
 
     uint8_t * c = (uint8_t*)([data bytes]);
-    NSDictionary *r=[self unpack_int :c length:[size toUInt32] count:[count toUInt32] reset:[reset toBool] ];
+    NSDictionary *r=[self unpack_int_hex :c length:[size toUInt32] count:[count toUInt32] reset:[reset toBool] ];
     
 
     return r;
