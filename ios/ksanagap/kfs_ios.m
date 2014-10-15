@@ -166,8 +166,10 @@
 }
 
 -(NSDictionary*) unpack_int:(uint8_t*)data length:(int)length count:(int)count reset:(bool)reset {
-    NSMutableArray* output=[NSMutableArray arrayWithCapacity:count];
-    int adv = 0, n=0;
+    //NSMutableArray* output=[NSMutableArray arrayWithCapacity:count];
+    NSMutableString *outputstr = [[NSMutableString alloc]init];
+    NSLog(@"unpack start");
+    unsigned int adv = 0, n=0;
     do {
         int S = 0;
         do {
@@ -177,25 +179,30 @@
             if (adv>=length) break;
         } while (( data[adv] & 0x80)!=0 );
 
-        [output addObject: [NSNumber numberWithUnsignedInt:n]];
+        //[output addObject: [NSNumber numberWithUnsignedInt:n]];
+        [outputstr appendFormat:@"%i,",n];
         if (reset) n=0;
         count--;
     } while (adv<length && count>0);
-
-    return [NSDictionary dictionaryWithObjectsAndKeys:output                             ,@"data",
+    NSLog(@"unpack ends");
+    return [NSDictionary dictionaryWithObjectsAndKeys:outputstr                        ,@"data",
                                                      [NSNumber numberWithUnsignedInt:adv],@"adv",nil];
 }
 
 -(NSDictionary *)readBuf_packedint:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size  count:(JSValue *)count  reset:(JSValue *)reset {
     NSFileHandle *h=[self handleByFid :handle.intValue];    if (!h) return nil;
 
+    
     uint64_t p=[pos toUInt32];
     [h seekToFileOffset:p];
     uint64_t sz=[size toUInt32];
     NSData *data = [h readDataOfLength:sz];
+    
 
     uint8_t * c = (uint8_t*)([data bytes]);
     NSDictionary *r=[self unpack_int :c length:[size toUInt32] count:[count toUInt32] reset:[reset toBool] ];
+    
+
     return r;
 }
 
@@ -232,7 +239,7 @@
     }
     return out;
 }
--(NSArray*) readStringArray:(NSNumber *)handle pos:(JSValue *)pos  size:(JSValue *)size enc:(JSValue *)enc {
+-(NSString*) readStringArray:(NSNumber *)handle pos:(JSValue *)pos  size:(JSValue *)size enc:(JSValue *)enc {
     NSString *s;
 
     if ( [[enc toString] isEqualToString:@"utf8"]) {
@@ -241,8 +248,8 @@
         s=[self readULE16String :handle pos:pos size:size];
     }
       
-    NSArray *out= [s componentsSeparatedByString:@"\0"];
-    return out;
+    //NSArray *out= [s componentsSeparatedByString:@"\0"]; //client split , much faster
+    return s;
 }
 
 @end

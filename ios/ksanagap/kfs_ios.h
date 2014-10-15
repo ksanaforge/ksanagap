@@ -15,7 +15,7 @@ JSExportAs(readULE16String,  - (NSString *)readULE16String:(NSNumber *)handle po
 JSExportAs(readBuf,       - (NSArray *)readBuf:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size);
 JSExportAs(readBuf_packedint,- (NSDictionary *)readBuf_packedint:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size  count:(JSValue *)count reset:(JSValue *)reset);
 JSExportAs(readFixedArray,   - (NSArray *)readFixedArray:(NSNumber *)handle pos:(JSValue *)pos  count:(JSValue *)count unitsz:(JSValue *)unitsz);
-JSExportAs(readStringArray,  - (NSArray *)readStringArray:(NSNumber *)handle pos:(JSValue *)pos  size:(JSValue *)size enc:(JSValue *)enc);
+JSExportAs(readStringArray,  - (NSString *)readStringArray:(NSNumber *)handle pos:(JSValue *)pos  size:(JSValue *)size enc:(JSValue *)enc);
 
 @end  
 
