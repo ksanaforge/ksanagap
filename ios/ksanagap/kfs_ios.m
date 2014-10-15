@@ -234,9 +234,7 @@ void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
 -(NSDictionary*) unpack_int_hex:(uint8_t*)data length:(int)length count:(int)count reset:(bool)reset {
     //NSMutableArray* output=[NSMutableArray arrayWithCapacity:count];
     
-    NSLog(@"unpack hex start");
     uint32_t *p= (uint32_t*)malloc(count*4);
-    
     uint32_t adv = 0, n=0 , cnt=0;
     do {
         int S = 0;
@@ -265,8 +263,6 @@ void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
     //NSString *outputstr=[NSString stringWithCString:r];
     //free(r);
     NSString *outputstr=[[NSString alloc] initWithBytesNoCopy:r length:cnt*11 encoding:1 freeWhenDone:YES];
-    
-    NSLog(@"unpack hex ends");
     return [NSDictionary dictionaryWithObjectsAndKeys:outputstr ,@"data",
             [NSNumber numberWithUnsignedInt:adv],@"adv",nil];
 }
@@ -275,7 +271,6 @@ void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
 -(NSDictionary*) unpack_int:(uint8_t*)data length:(int)length count:(int)count reset:(bool)reset {
     //NSMutableArray* output=[NSMutableArray arrayWithCapacity:count];
     NSMutableString *outputstr = [[NSMutableString alloc]init];
-    NSLog(@"unpack start");
     unsigned int adv = 0, n=0;
     do {
         int S = 0;
@@ -291,7 +286,6 @@ void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
         if (reset) n=0;
         count--;
     } while (adv<length && count>0);
-    NSLog(@"unpack ends");
     return [NSDictionary dictionaryWithObjectsAndKeys:outputstr                        ,@"data",
                                                      [NSNumber numberWithUnsignedInt:adv],@"adv",nil];
 }
