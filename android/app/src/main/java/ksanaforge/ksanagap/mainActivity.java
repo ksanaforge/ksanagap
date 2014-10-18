@@ -14,7 +14,7 @@ import java.io.*;
 
 public class mainActivity extends Activity {
 
-    private String ksanapath= Environment.getExternalStorageDirectory() +"/ksanagap/";
+    private String ksanapath;
     private String sdpath="",sdindex="";
     private String assetpath="file:///android_asset/";
     final ksanagap_droid ksanagap_api= new ksanagap_droid();//this);
@@ -30,7 +30,7 @@ public class mainActivity extends Activity {
         dirs=getAppDirs();
         wv=(WebView)findViewById(R.id.webview);
         initWebview(wv);
-        if (dirs.length>0) loadHomepage(wv,dirs[0]);
+        if (dirs!=null && dirs.length>0) loadHomepage(wv,dirs[0]);
     }
     protected void initWebview(WebView myWebView) {
         //MyWebView myWebView = (MyWebView) findViewById(R.id.webview);
@@ -61,6 +61,7 @@ public class mainActivity extends Activity {
         return true;
     }
     protected String[] getAppDirs() {
+        ksanapath= Environment.getExternalStorageDirectory() +"/ksanagap/";
         File file=new File(ksanapath);
         String[] directories = file.list(new FilenameFilter() {
             @Override

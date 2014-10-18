@@ -1,5 +1,6 @@
 package ksanaforge.ksanagap.jsintf;
 
+import android.util.JsonReader;
 import android.webkit.JavascriptInterface;
 
 import java.io.BufferedReader;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
@@ -151,7 +153,9 @@ public class kfs_droid {
         } while (a<A.length && count>0);
         long R[] = new long[b];
         adv[0]=a; //how many bytes read
-        for (int i = 0; i < R.length; i++) R[i] = B[i];
+
+        //for (int i = 0; i < R.length; i++) R[i] = B[i];
+        System.arraycopy(B, 0, R, 0, b);
         return R;
     }
     @JavascriptInterface
@@ -186,7 +190,64 @@ public class kfs_droid {
         s=s.replaceAll("\0","\uffff");
         return s;
     }
+    protected int indexOfSorted (long[] array, long obj) {
+        int low = 0, high = array.length-1;
+        while (low < high) {
+            int mid = (low + high) >> 1;
+            if (array[mid] < obj) {
+                low=mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return low;
+    };
 
+    protected long[] pland (long[] pl1, long[] pl2,int distance) {
+        int swap = 0,rcount=0;
+        if (pl1.length > pl2.length) { //swap for faster compare
+            long[] t = pl2;
+            pl2 = pl1;
+            pl1 = t;
+            swap = distance;
+            distance = -distance;
+        }
+        long r[] = new long[pl2.length];
+        for (int i = 0; i < pl1.length; i++) {
+            int k = indexOfSorted(pl2, pl1[i] + distance);
+            long hit=-1;
+            if (pl2[k] == (pl1[i] + distance)) hit=k;
+            if (hit > -1) r[rcount++]=(pl1[i] - swap);
+        }
+        long R[] = new long[rcount];
+        System.arraycopy(r, 0, R, 0, rcount);
+        return R;
+    }
+    protected long[] phraseSearch(ArrayList<long[]> postings){
+        if (postings.size()==1) return postings.get(0);
+        long []r=postings.get(0);
+        for (int i=1;i<postings.size();i++) {
+            r = pland(r, postings.get(i),i);
+        }
+        return r;
+    }
+    @JavascriptInterface
+    public String mergePostings(int handle,String positions) throws JSONException {
+        JSONArray blockpos= new JSONArray(positions);
+        ArrayList<long[]> postings=new ArrayList<long[]>();
+        for (int i=0;i<blockpos.length();i++) {
+            JSONArray bpos=blockpos.getJSONArray(i);
+            int pos=bpos.getInt(0);
+            int blocksize=bpos.getInt(1);
+            byte[] b=readBytes(handle, pos+1, blocksize-1);//skip signature
+            int[] adv= new int[1];
+            long[] arr=unpack_int(b,blocksize,false,adv);
+            postings.add(arr);
+        }
+        long[] arr=phraseSearch(postings);
+        String str=Arrays.toString(arr);
+        return str;
+    }
     @JavascriptInterface
     public String readDir(String path) {
         String out="";
