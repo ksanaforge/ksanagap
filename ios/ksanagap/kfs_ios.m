@@ -148,7 +148,6 @@
     int64_t p=[pos toUInt32];
     [h seekToFileOffset:p];
     NSData *data = [h readDataOfLength:4];
-    unsigned char *t=[data bytes];
 
     uint32_t i = *(unsigned int*)([data bytes]);
     i=CFSwapInt32HostToBig(i);
@@ -202,16 +201,6 @@
 
 
 void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
-    /*
-    for (int i=0;i<cnt;i++){
-        char b=*bytes++, c;
-        char B=(b>>4) &0xf;
-        if (B<9) c=B+'0'; else c=B - 10+'A' ; *chars++=c;
-        B=b&0xf;
-        if (B<9) c=B+'0'; else c=B - 10+'A' ; *chars++=c;
-    }
-     */
-
     uint32_t *end=ints+cnt;
     uint32_t b=0;
     unsigned char B,c;
@@ -231,6 +220,7 @@ void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
         ints++;
     }
 }
+
 -(NSDictionary*) unpack_int_hex:(uint8_t*)data length:(int)length count:(int)count reset:(bool)reset {
     //NSMutableArray* output=[NSMutableArray arrayWithCapacity:count];
     
@@ -268,6 +258,7 @@ void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
 }
 
 
+
 -(NSDictionary*) unpack_int:(uint8_t*)data length:(int)length count:(int)count reset:(bool)reset {
     //NSMutableArray* output=[NSMutableArray arrayWithCapacity:count];
     NSMutableString *outputstr = [[NSMutableString alloc]init];
@@ -290,13 +281,14 @@ void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
                                                      [NSNumber numberWithUnsignedInt:adv],@"adv",nil];
 }
 
+
 -(NSDictionary *)readBuf_packedint:(NSNumber *)handle pos:(JSValue *)pos size:(JSValue *)size  count:(JSValue *)count  reset:(JSValue *)reset {
     NSFileHandle *h=[self handleByFid :handle.intValue];    if (!h) return nil;
 
     
     uint64_t p=[pos toUInt32];
     [h seekToFileOffset:p];
-    uint64_t sz=[size toUInt32];
+    uint32_t sz=[size toUInt32];
     NSData *data = [h readDataOfLength:sz];
     
 
@@ -352,6 +344,134 @@ void hex_dump(uint32_t *ints, unsigned char *chars, int cnt){
     //NSArray *out= [s componentsSeparatedByString:@"\0"]; //client split , much faster
     return s;
 }
+uint32_t* unpack( uint8_t* data ,uint32_t length, uint32_t *cnt) {
+    uint32_t *temp=malloc(length*sizeof(uint32_t));
+    
+    unsigned int adv = 0, n=0, count=0;
+    do {
+        int S = 0;
+        do {
+            n += ( data[adv] & 0x7f) << S;
+            S += 7;
+            adv++;
+            if (adv>=length) break;
+        } while (( data[adv] & 0x80)!=0 );
+        
+        temp[count++]=n;
+    } while (adv<length);
+    
+    *cnt=count;
+    uint32_t size=count * sizeof(uint32_t);
+    uint32_t *result=malloc(size);
+    memcpy(result,temp,size);
+    free(temp);
+    return result;
+}
+
+int64_t indexOfSorted(uint32_t *array, uint32_t acount , uint32_t obj) {
+    int64_t low = 0;
+    int64_t mid = 0;
+    int64_t high = acount-1;
+    while (low < high) {
+        mid = (low + high) >> 1;
+        if (array[mid] < obj) low = mid + 1;
+        else                  high = mid;
+    }
+    return low;
+};
+
+uint32_t *pland (uint32_t *pl1, uint32_t pl1count, uint32_t *pl2, uint32_t pl2count, uint32_t distance , uint32_t *count) {
+    
+    uint32_t swap = 0;
+    uint32_t rc=0;
+    
+    if (pl1count > pl2count) { //swap for faster compare
+        uint32_t* t = pl2;
+        uint32_t  tcount =pl2count;
+        pl2 = pl1;
+        pl1 = t;
+        pl2count = pl1count;
+        pl1count = tcount;
+        swap = distance;
+        distance = -distance;
+    }
+    uint32_t *r=malloc(pl2count*sizeof(uint32_t)); //maximum posible match
+    
+    for (int i = 0; i < pl1count; i++) {
+        int64_t k = indexOfSorted(pl2, pl2count, pl1[i] + distance);
+        int64_t hit = -1;
+        if (pl2[k] == (pl1[i] + distance)) hit=k;
+        if (hit > -1) {
+          r[rc++]=pl1[i] - swap;
+        }
+    }
+
+    uint32_t *result = malloc( rc * sizeof(uint32_t)); //free by caller
+    memcpy(result,r,rc*sizeof(uint32_t));
+    free(r);
+    *count=rc;
+    return result;
+}
+
+uint32_t *phraseSearch (uint32_t** postings, uint32_t *postingsize, uint64_t nposting, uint32_t *size){
+    uint32_t *r=postings[0];
+    uint32_t rsize=postingsize[0];
+    uint32_t newsize=0;
+    uint32_t *newr=nil;
+    if (nposting==1){
+        *size=postingsize[0];
+        return postings[0];
+    }
+
+    for (int i=1;i<nposting;i++) {
+        newr = pland(r, rsize, postings[i],postingsize[i], i, &newsize);
+        if (i>1)free(r); //free intermediate result
+        r=newr;
+        rsize=newsize;
+        
+    }
+    *size=rsize;
+    return r;
+}
+
+-(NSString*) mergePostings:(NSNumber*)handle positions:(NSArray*)positions{
+    NSFileHandle *h=[self handleByFid :handle.intValue];    if (!h) return nil;
+
+    uint64_t nposting=[positions count];
+    uint32_t ** postings=malloc(nposting*sizeof(uint32_t *));
+    uint32_t * postingsize=malloc(nposting*sizeof(uint32_t));
+    
+    for (int i=0;i<nposting;i++) {
+        NSArray *bpos=positions[i];
+        uint32_t pos=((NSNumber*)bpos[0]).intValue +1 ; //skip signature
+        uint32_t blocksz=((NSNumber*)bpos[1]).intValue - 1;
+        
+        [h seekToFileOffset:pos];
+        NSData *data = [h readDataOfLength:blocksz];
+        
+        uint8_t * c = (uint8_t*)([data bytes]);
+        
+        uint32_t sz;
+        postings[i]=unpack(c ,blocksz, &sz);
+        postingsize[i]=sz;
+
+    }
+    uint32_t size;
+    uint32_t* p=phraseSearch( postings , postingsize, nposting,&size);
+    
+    for (int i=0;i<nposting;i++) free(postings[i]);
+    free(postings);
+    free(postingsize);
+    
+    unsigned char *r=(unsigned char*)malloc(size*11+1); // this is used in outputstr, do not free
+    hex_dump(p, r , size);
+    free(p);
+    
+    NSString *outputstr=[[NSString alloc] initWithBytesNoCopy:r length:size*11 encoding:1 freeWhenDone:YES];
+    return outputstr;
+}
+
+
 
 @end
 
