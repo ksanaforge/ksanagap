@@ -7,16 +7,18 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.os.Environment;
 import ksanaforge.ksanagap.jsintf.*;
+import ksanaforge.ksanagap.installer;
 import android.os.Build;
 import static ksanaforge.ksanagap.R.layout.activity_main;
 import java.io.File;
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+
 
 public class mainActivity extends Activity {
-
     private String ksanapath;
     private String sdpath="",sdindex="";
-    private String assetpath="file:///android_asset/";
     final ksanagap_droid ksanagap_api= new ksanagap_droid();//this);
     final fs_droid fs_api= new fs_droid();//this);
     final kfs_droid kfs_api= new kfs_droid();
@@ -30,7 +32,9 @@ public class mainActivity extends Activity {
         dirs=getAppDirs();
         wv=(WebView)findViewById(R.id.webview);
         initWebview(wv);
-        if (dirs!=null && dirs.length>0) loadHomepage(wv,dirs[0]);
+        List list=Arrays.asList(dirs);
+        if (dirs==null || !list.contains("installer")) welcome();
+        else loadHomepage(dirs[0]);
     }
     protected void initWebview(WebView myWebView) {
         //MyWebView myWebView = (MyWebView) findViewById(R.id.webview);
@@ -44,8 +48,15 @@ public class mainActivity extends Activity {
         myWebView.addJavascriptInterface(fs_api, "fs"); //node compatible interface
         myWebView.addJavascriptInterface(kfs_api, "kfs"); //for kdb
     }
-
-    public void loadHomepage(WebView wv,String appname) {
+    public void welcome() {
+        try {
+            installer.copySelf(getAssets());
+            loadHomepage("installer");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void loadHomepage(String appname) {
         setTitle(appname);
         sdpath=ksanapath+appname+"/";
         fs_api.setRootPath(sdpath);
@@ -63,13 +74,16 @@ public class mainActivity extends Activity {
     protected String[] getAppDirs() {
         ksanapath= Environment.getExternalStorageDirectory() +"/ksanagap/";
         File file=new File(ksanapath);
-        String[] directories = file.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File current, String name) {
-                return new File(current, name).isDirectory();
-            }
-        });
-        return directories;
+        if (file.exists()) {
+            String[] directories = file.list(new FilenameFilter() {
+                @Override
+                public boolean accept(File current, String name) {
+                    return new File(current, name).isDirectory();
+                }
+            });
+            return directories;
+        }
+        return null;
     }
     private int APPITEMSTART=100;
     protected void createAppMenu(Menu menu) {
@@ -79,7 +93,7 @@ public class mainActivity extends Activity {
     }
     protected void gotoApp(int id){
         String appname=dirs[id-APPITEMSTART];
-        loadHomepage(wv,appname);
+        loadHomepage(appname);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -87,7 +101,9 @@ public class mainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_installer) {
+            wv=(WebView)findViewById(R.id.webview);
+            loadHomepage("installer");
             return true;
         } else {
             gotoApp(id);

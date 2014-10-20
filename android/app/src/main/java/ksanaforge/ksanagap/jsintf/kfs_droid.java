@@ -251,6 +251,7 @@ public class kfs_droid {
     @JavascriptInterface
     public String readDir(String path) {
         String out="";
+        if (path==null) path=".";
         if (path.startsWith(".")){
             if (path.equals("..")) { //only allow listing parent
                 int last = rootpath.lastIndexOf("/");
