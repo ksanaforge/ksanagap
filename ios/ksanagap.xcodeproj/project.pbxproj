@@ -216,7 +216,7 @@
 				TargetAttributes = {
 					BA85B13E19DBE05B00FF042F = {
 						CreatedOnToolsVersion = 6.0;
-						DevelopmentTeam = K78UD4724Z;
+						DevelopmentTeam = S85G2288V4;
 					};
 					BA85B15419DBE05B00FF042F = {
 						CreatedOnToolsVersion = 6.0;
@@ -437,6 +437,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = ksanagapTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ksanagap.app/ksanagap";
@@ -452,6 +453,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = ksanagapTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ksanagap.app/ksanagap";

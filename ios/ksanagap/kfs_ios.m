@@ -439,7 +439,7 @@ uint32_t *phraseSearch (uint32_t** postings, uint32_t *postingsize, uint64_t npo
 
     uint64_t nposting=[positions count];
     uint32_t ** postings=malloc(nposting*sizeof(uint32_t *));
-    uint32_t * postingsize=malloc(nposting*sizeof(uint32_t));
+    uint32_t *postingsize=malloc(nposting*sizeof(uint32_t));
     
     for (int i=0;i<nposting;i++) {
         NSArray *bpos=positions[i];
