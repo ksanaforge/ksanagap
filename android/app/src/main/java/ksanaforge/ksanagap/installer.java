@@ -11,8 +11,8 @@ import java.io.*;
 import java.lang.Object;
 
 public class installer {
-    static public void copySelf(AssetManager assets) throws IOException {
-        String installerpath= Environment.getExternalStorageDirectory() +"/ksanagap/installer/";
+    static public void copySelf(AssetManager assets,String installerpath) throws IOException {
+
         String[] filenames = {"index.html","jquery.js","react-with-addons.js","build.css","build.js"};
 
         final File path = new File(installerpath);

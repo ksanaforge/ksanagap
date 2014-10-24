@@ -32,9 +32,13 @@ public class mainActivity extends Activity {
         dirs=getAppDirs();
         wv=(WebView)findViewById(R.id.webview);
         initWebview(wv);
-        List list=Arrays.asList(dirs);
-        if (dirs==null || !list.contains("installer")) welcome();
-        else loadHomepage(dirs[0]);
+
+        if (dirs==null)  welcome();
+        else {
+            List list=Arrays.asList(dirs);
+            if (!list.contains("installer")) welcome();
+            else loadHomepage(dirs[0]);
+        }
     }
     protected void initWebview(WebView myWebView) {
         //MyWebView myWebView = (MyWebView) findViewById(R.id.webview);
@@ -49,8 +53,9 @@ public class mainActivity extends Activity {
         myWebView.addJavascriptInterface(kfs_api, "kfs"); //for kdb
     }
     public void welcome() {
+        String installerpath= Environment.getExternalStorageDirectory() +"/"+this.getString(R.string.app_rootpath)+"/installer/";
         try {
-            installer.copySelf(getAssets());
+            installer.copySelf(getAssets(),installerpath);
             loadHomepage("installer");
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,7 +77,7 @@ public class mainActivity extends Activity {
         return true;
     }
     protected String[] getAppDirs() {
-        ksanapath= Environment.getExternalStorageDirectory() +"/ksanagap/";
+        ksanapath= Environment.getExternalStorageDirectory() +"/"+ this.getString(R.string.app_rootpath)+"/";
         File file=new File(ksanapath);
         if (file.exists()) {
             String[] directories = file.list(new FilenameFilter() {
