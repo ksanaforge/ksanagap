@@ -12,6 +12,7 @@
 #import "kfs_ios.h"
 #import "ksanagap_ios.h"
 
+
 @interface ViewController () <UIWebViewDelegate> {
     UIWebView *webView;
     UIToolbar *toobar;
@@ -97,7 +98,7 @@ int TOOLBARH=44;
     
     baseURL = [NSString stringWithFormat:@"file:/%@//", baseURL];
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
-
+    
     NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
     if (webView) {
         [webView removeFromSuperview];

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0183485519ED342700B59903 /* ksanagap_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183485419ED342700B59903 /* ksanagap_ios.m */; };
 		9F57699719DD94590007C2EF /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F57699619DD94590007C2EF /* refresh.png */; };
-		BA323D0319DC1E5400F66BB8 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = BA323D0219DC1E5400F66BB8 /* test.txt */; };
 		BA85B14519DBE05B00FF042F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA85B14419DBE05B00FF042F /* main.m */; };
 		BA85B14819DBE05B00FF042F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BA85B14719DBE05B00FF042F /* AppDelegate.m */; };
 		BA85B14B19DBE05B00FF042F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BA85B14A19DBE05B00FF042F /* ViewController.m */; };
@@ -36,19 +35,6 @@
 		0183485319ED342700B59903 /* ksanagap_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ksanagap_ios.h; sourceTree = "<group>"; };
 		0183485419ED342700B59903 /* ksanagap_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ksanagap_ios.m; sourceTree = "<group>"; };
 		9F57699619DD94590007C2EF /* refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh.png; sourceTree = "<group>"; };
-		BA323CF619DC115C00F66BB8 /* NLContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NLContext.h; path = ../../../Nodelike/Nodelike/NLContext.h; sourceTree = "<group>"; };
-		BA323CF719DC118800F66BB8 /* pthread-fixes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "pthread-fixes.h"; path = "../../../Nodelike/libuv/include/pthread-fixes.h"; sourceTree = "<group>"; };
-		BA323CF819DC118800F66BB8 /* stdint-msvc2008.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "stdint-msvc2008.h"; path = "../../../Nodelike/libuv/include/stdint-msvc2008.h"; sourceTree = "<group>"; };
-		BA323CF919DC118800F66BB8 /* tree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tree.h; path = ../../../Nodelike/libuv/include/tree.h; sourceTree = "<group>"; };
-		BA323CFA19DC118800F66BB8 /* uv-bsd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "uv-bsd.h"; path = "../../../Nodelike/libuv/include/uv-bsd.h"; sourceTree = "<group>"; };
-		BA323CFB19DC118800F66BB8 /* uv-darwin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "uv-darwin.h"; path = "../../../Nodelike/libuv/include/uv-darwin.h"; sourceTree = "<group>"; };
-		BA323CFC19DC118800F66BB8 /* uv-errno.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "uv-errno.h"; path = "../../../Nodelike/libuv/include/uv-errno.h"; sourceTree = "<group>"; };
-		BA323CFD19DC118800F66BB8 /* uv-linux.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "uv-linux.h"; path = "../../../Nodelike/libuv/include/uv-linux.h"; sourceTree = "<group>"; };
-		BA323CFE19DC118800F66BB8 /* uv-sunos.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "uv-sunos.h"; path = "../../../Nodelike/libuv/include/uv-sunos.h"; sourceTree = "<group>"; };
-		BA323CFF19DC118800F66BB8 /* uv-unix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "uv-unix.h"; path = "../../../Nodelike/libuv/include/uv-unix.h"; sourceTree = "<group>"; };
-		BA323D0019DC118800F66BB8 /* uv-win.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "uv-win.h"; path = "../../../Nodelike/libuv/include/uv-win.h"; sourceTree = "<group>"; };
-		BA323D0119DC118800F66BB8 /* uv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = uv.h; path = ../../../Nodelike/libuv/include/uv.h; sourceTree = "<group>"; };
-		BA323D0219DC1E5400F66BB8 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test.txt; path = ../test.txt; sourceTree = "<group>"; };
 		BA85B13F19DBE05B00FF042F /* ksanagap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ksanagap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA85B14319DBE05B00FF042F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA85B14419DBE05B00FF042F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -120,7 +106,6 @@
 				0183485319ED342700B59903 /* ksanagap_ios.h */,
 				0183485419ED342700B59903 /* ksanagap_ios.m */,
 				BA85B16719DBEB7400FF042F /* build.js */,
-				BA323D0219DC1E5400F66BB8 /* test.txt */,
 				BA85B14C19DBE05B00FF042F /* Main.storyboard */,
 				9F57699619DD94590007C2EF /* refresh.png */,
 				BA85B14F19DBE05B00FF042F /* Images.xcassets */,
@@ -132,18 +117,6 @@
 		BA85B14219DBE05B00FF042F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				BA323CF619DC115C00F66BB8 /* NLContext.h */,
-				BA323CF719DC118800F66BB8 /* pthread-fixes.h */,
-				BA323CF819DC118800F66BB8 /* stdint-msvc2008.h */,
-				BA323CF919DC118800F66BB8 /* tree.h */,
-				BA323CFA19DC118800F66BB8 /* uv-bsd.h */,
-				BA323CFB19DC118800F66BB8 /* uv-darwin.h */,
-				BA323CFC19DC118800F66BB8 /* uv-errno.h */,
-				BA323CFD19DC118800F66BB8 /* uv-linux.h */,
-				BA323CFE19DC118800F66BB8 /* uv-sunos.h */,
-				BA323CFF19DC118800F66BB8 /* uv-unix.h */,
-				BA323D0019DC118800F66BB8 /* uv-win.h */,
-				BA323D0119DC118800F66BB8 /* uv.h */,
 				BA85B14319DBE05B00FF042F /* Info.plist */,
 				BA85B14419DBE05B00FF042F /* main.m */,
 			);
@@ -252,7 +225,6 @@
 				BA85B14E19DBE05B00FF042F /* Main.storyboard in Resources */,
 				BA85B15019DBE05B00FF042F /* Images.xcassets in Resources */,
 				BA85B16619DBE0ED00FF042F /* index.html in Resources */,
-				BA323D0319DC1E5400F66BB8 /* test.txt in Resources */,
 				9F57699719DD94590007C2EF /* refresh.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

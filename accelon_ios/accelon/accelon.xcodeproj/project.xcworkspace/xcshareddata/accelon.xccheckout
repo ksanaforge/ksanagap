@@ -5,32 +5,24 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>81938321-327B-47DD-A120-E17052242AF4</string>
+	<string>3F1DA23A-51AA-487C-A680-B8AA621DD2E3</string>
 	<key>IDESourceControlProjectName</key>
-	<string>ksanagap</string>
+	<string>accelon</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>21F58A1FDCB4DCD21EC7D0ACCFFF16FE261DD40A</key>
 		<string>https://github.com/ksanaforge/dev2014</string>
-		<key>7780E198A46684277B6C53D1786393EB194B54A1</key>
-		<string>https://github.com/node-app/Nodelike.git</string>
 		<key>A53257B3B2CA28742EC847754735043F4176E582</key>
 		<string>https://github.com/ksanaforge/ksanagap</string>
-		<key>BC09C09DC2853BA9B3A84860F78F2E9FD790D8C3</key>
-		<string>https://github.com/joyent/libuv.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>ios/ksanagap.xcodeproj</string>
+	<string>accelon_ios/accelon/accelon.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>21F58A1FDCB4DCD21EC7D0ACCFFF16FE261DD40A</key>
-		<string>../../../..</string>
-		<key>7780E198A46684277B6C53D1786393EB194B54A1</key>
-		<string>../../../../Nodelike</string>
+		<string>../../../../..</string>
 		<key>A53257B3B2CA28742EC847754735043F4176E582</key>
-		<string>../../..</string>
-		<key>BC09C09DC2853BA9B3A84860F78F2E9FD790D8C3</key>
-		<string>../../../../Nodelike/libuv</string>
+		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/ksanaforge/ksanagap</string>
@@ -55,22 +47,6 @@
 			<string>A53257B3B2CA28742EC847754735043F4176E582</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ksanagap</string>
-		</dict>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>BC09C09DC2853BA9B3A84860F78F2E9FD790D8C3</string>
-			<key>IDESourceControlWCCName</key>
-			<string>libuv</string>
-		</dict>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>7780E198A46684277B6C53D1786393EB194B54A1</string>
-			<key>IDESourceControlWCCName</key>
-			<string>Nodelike</string>
 		</dict>
 	</array>
 </dict>
