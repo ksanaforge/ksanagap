@@ -7,5 +7,7 @@
     <string name="action_installer">Installer</string>
     <string name="action_refresh">Refresh</string>
     <string name="homepage">index.html</string>
+    <string name="title_activity_installapp">installapp</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
