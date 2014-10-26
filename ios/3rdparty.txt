@@ -1,0 +1,3 @@
+https://github.com/robertmryan/download-manager
+
+https://github.com/oarrabi/Download-Manager

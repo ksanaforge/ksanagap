@@ -69,9 +69,13 @@ public class fs_droid {
         }
     }
     @JavascriptInterface
-         public int writeFileSync(String fname, String content) {
+        public int writeFileSync(String fname, String content) {
         return writeFileSync(fname,content,"utf8");
     }
 
+    @JavascriptInterface
+    public int renameSync(String oldPath, String newPath) {
+        //not implement yet
+    }
 }
 
