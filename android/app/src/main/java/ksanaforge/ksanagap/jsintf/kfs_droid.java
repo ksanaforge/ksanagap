@@ -280,7 +280,7 @@ public class kfs_droid {
         File f=null;
         JSONArray array = new JSONArray();
         for (int i=0;i<dirs.length;i++) {
-            String fn=parentPath()+dirs[i]+"/ksana.json";
+            String fn=parentPath()+dirs[i]+"/ksana.js";
             f= new File(fn);
             if (!f.exists()) continue;
             try {
