@@ -19,10 +19,8 @@ import java.util.List;
 
 public class mainActivity extends Activity {
     private String ksanapath;
-    private String sdpath="",sdindex="";
     final ksanagap_droid ksanagap_api= new ksanagap_droid();//this);
-    final fs_droid fs_api= new fs_droid();//this);
-    final kfs_droid kfs_api= new kfs_droid();
+
     protected String[] dirs=null;
     protected WebView wv;
     //  final console_droid console_api= new console_droid();//this);  //already have in 4.4
@@ -33,12 +31,17 @@ public class mainActivity extends Activity {
         dirs=getAppDirs();
         wv=(WebView)findViewById(R.id.webview);
         initWebview(wv);
-
+        ksanagap_api.wv=wv;
+        ksanagap_api.dirs=dirs;
+        ksanagap_api.activity=this;
         if (dirs==null)  welcome();
         else {
             List list=Arrays.asList(dirs);
             if (!list.contains("installer")) welcome();
-            else loadHomepage(dirs[0]);
+            else {
+                int i=list.indexOf("installer");
+                ksanagap_api.switchApp(dirs[i]);
+            }
         }
     }
     protected void initWebview(WebView myWebView) {
@@ -50,25 +53,17 @@ public class mainActivity extends Activity {
         }
         myWebView.addJavascriptInterface(ksanagap_api, "ksanagap");
         //myWebView.addJavascriptInterface(console_api, "console");
-        myWebView.addJavascriptInterface(fs_api, "fs"); //node compatible interface
-        myWebView.addJavascriptInterface(kfs_api, "kfs"); //for kdb
+        myWebView.addJavascriptInterface(ksanagap_api.fs_api, "fs"); //node compatible interface
+        myWebView.addJavascriptInterface(ksanagap_api.kfs_api, "kfs"); //for kdb
     }
     public void welcome() {
         String installerpath= Environment.getExternalStorageDirectory() +"/"+this.getString(R.string.app_rootpath)+"/installer/";
         try {
             installer.copySelf(getAssets(),installerpath);
-            loadHomepage("installer");
+            ksanagap_api.switchApp("installer");
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    public void loadHomepage(String appname) {
-        setTitle(appname);
-        sdpath=ksanapath+appname+"/";
-        fs_api.setRootPath(sdpath);
-        kfs_api.setRootPath(sdpath);
-        sdindex=sdpath+this.getString(R.string.homepage);
-        wv.loadUrl("file://"+sdindex);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -79,6 +74,7 @@ public class mainActivity extends Activity {
     }
     protected String[] getAppDirs() {
         ksanapath= Environment.getExternalStorageDirectory() +"/"+ this.getString(R.string.app_rootpath)+"/";
+        ksanagap_api.ksanapath=ksanapath;
         File file=new File(ksanapath);
         if (file.exists()) {
             String[] directories = file.list(new FilenameFilter() {
@@ -99,7 +95,7 @@ public class mainActivity extends Activity {
     }
     protected void gotoApp(int id){
         String appname=dirs[id-APPITEMSTART];
-        loadHomepage(appname);
+        ksanagap_api.switchApp(appname);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -108,8 +104,7 @@ public class mainActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_installer) {
-            wv=(WebView)findViewById(R.id.webview);
-            loadHomepage("installer");
+            ksanagap_api.switchApp("installer");
             return true;
         } else {
             gotoApp(id);

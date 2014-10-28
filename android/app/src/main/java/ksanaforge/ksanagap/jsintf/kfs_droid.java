@@ -1,24 +1,22 @@
 package ksanaforge.ksanagap.jsintf;
 
-import android.util.JsonReader;
 import android.webkit.JavascriptInterface;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Scanner;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.HashMap;
-import java.util.Map;
+import ksanaforge.ksanagap.jsintf.JSON;
+
 /**
  * Created by yapcheahshen on 2014/10/7.
  */
@@ -89,7 +87,7 @@ public class kfs_droid {
     @JavascriptInterface
     public int readInt32 (int handle, long pos) {
         byte[] b=readBytes(handle, pos, 4);
-        ByteBuffer wrapped=ByteBuffer.wrap(b);
+        ByteBuffer wrapped= ByteBuffer.wrap(b);
         int i=wrapped.getInt();
         return i;
     }
@@ -248,16 +246,20 @@ public class kfs_droid {
         String str=Arrays.toString(arr);
         return str;
     }
+
+    protected String parentPath() {
+        int last = rootpath.lastIndexOf("/");
+        String path=rootpath.substring(0,last);
+        last = path.lastIndexOf("/");
+        return  path.substring(0,last+1);
+    }
     @JavascriptInterface
     public String readDir(String path) {
         String out="";
         if (path==null) path=".";
         if (path.startsWith(".")){
             if (path.equals("..")) { //only allow listing parent
-                int last = rootpath.lastIndexOf("/");
-                path=rootpath.substring(0,last);
-                last = path.lastIndexOf("/");
-                path=path.substring(0,last+1);
+                path=parentPath();
             } else {
                 path=rootpath;
             }
@@ -270,5 +272,34 @@ public class kfs_droid {
             out=out+files[i].getName()+"\uffff";
         }
         return out;
+    }
+    @JavascriptInterface
+    public String listApps() {
+
+        String[] dirs=readDir("..").split("\uffff");
+        File f=null;
+        JSONArray array = new JSONArray();
+        for (int i=0;i<dirs.length;i++) {
+            String fn=parentPath()+dirs[i]+"/ksana.json";
+            f= new File(fn);
+            if (!f.exists()) continue;
+            try {
+                String content = new Scanner(new File(fn)).useDelimiter("\\Z").next();
+                try {
+                    JSONObject obj=JSON.parse(content);
+                    if (obj!=null){
+                        obj.put("dbid",dirs[i]);
+                        obj.put("path",dirs[i]);
+                        array.put(obj);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return array.toString();
     }
 }

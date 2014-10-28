@@ -76,6 +76,7 @@ public class fs_droid {
     @JavascriptInterface
     public int renameSync(String oldPath, String newPath) {
         //not implement yet
+        return 0;
     }
 }
 
