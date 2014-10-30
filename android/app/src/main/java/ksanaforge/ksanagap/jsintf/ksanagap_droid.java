@@ -1,11 +1,17 @@
 package ksanaforge.ksanagap.jsintf;
 import android.app.Activity;
+import android.app.DownloadManager;
+
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
 import android.webkit.JavascriptInterface;
 import android.util.Log;
 import android.webkit.WebView;
 
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,6 +27,8 @@ public class ksanagap_droid {
     public WebView wv=null;
     public String[] dirs=null;
     public Activity activity=null;
+    protected String downloadresult="";
+
     public ksanagap_droid(){//Context c) {
         // mContext = c;
     }
@@ -36,6 +44,13 @@ public class ksanagap_droid {
         for iOS
         http://stackoverflow.com/questions/12874917/how-to-run-code-in-the-ui-thread-calling-it-from-the-others-ones
          */
+        String hash="";
+        int hashash=Path.indexOf("#");
+        if (hashash>-1) {
+            hash=Path.substring(hashash);
+            Path=Path.substring(0,hashash);
+        }
+        final String hashtag=hash;
         List list= Arrays.asList(dirs);
         if (!list.contains(Path)) return;
         final String path=Path;
@@ -45,9 +60,91 @@ public class ksanagap_droid {
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 activity.setTitle(path);
-                wv.loadUrl("file://" + sdpath + "index.html");
+                wv.loadUrl("file://" + sdpath + "index.html"+ hashtag);
             }
         });
 
     }
+    protected Boolean downloading=false;
+    protected DownloadManager downloadManager;
+    public ArrayList<Long> downloads=new ArrayList();
+    protected ArrayList<Long> downloads_saved=new ArrayList();
+    public long downloadedbyte=0;
+
+/*
+    protected void download(String url,String targetfile) {
+        DownloadManager downloadManager= (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setDestinationInExternalPublicDir("/accelon/yinshun/",targetfile);
+        jsondownloadid=downloadManager.enqueue(request);
+    }*/
+@JavascriptInterface
+    public boolean startDownload(String dbid, String baseurl, String _files) {
+        if (downloading) return false;
+        String[] files=_files.split("\uffff");
+        downloads_saved.clear();
+        downloads.clear();
+        downloadManager = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
+
+    for (int i=0;i<files.length;i++) {
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(baseurl+files[i]));
+            request.setTitle("dbid:"+files[i]);
+            //Set a description of this download, to be displayed in notifications (if enabled)
+            request.setDescription(baseurl+files[i]);
+            request.setDestinationInExternalPublicDir("/accelon/"+dbid,files[i]);
+        //Environment.DIRECTORY_DOWNLOADS
+            long id=downloadManager.enqueue(request);
+            downloads.add(id);
+            downloads_saved.add(id);
+        }
+        return true;
+    }
+
+
+    @JavascriptInterface
+    public long downloadingFile() {
+        return 0;
+    }
+
+    @JavascriptInterface
+    public long downloadedByte() {
+        DownloadManager.Query q = new DownloadManager.Query();
+        if (downloads.size()==0) return 0;
+
+        long[] downloadids=getDownloads();
+        q.setFilterById(downloadids);
+        Cursor cursor = downloadManager.query(q);
+        cursor.moveToFirst();
+        int bytes_downloaded=0;
+        while (!cursor.isLast()) {
+            bytes_downloaded += cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        //Log.d("ksanagap","total downloaded bytes"+bytes_downloaded);
+        return bytes_downloaded;
+    }
+
+    public long[] getDownloads() {
+        long [] downloadids=new long[downloads_saved.size()];
+        for (int i=0;i<downloads_saved.size();i++) downloadids[i]= downloads_saved.get(i);
+        return downloadids;
+    }
+    @JavascriptInterface
+    public long cancelDownload() {
+//http://stackoverflow.com/questions/14073323/is-it-possible-to-cancel-stop-a-download-started-using-downloadmanager
+        long[] downloadids=getDownloads();
+        downloadManager.remove(downloadids);
+        return 0;
+    }
+
+    @JavascriptInterface
+    public String doneDownload() {
+        if (downloads.size()==0) return downloadresult;
+        else return "";
+    }
+    public void finish() {
+        downloadresult = "success";
+    }
+
 }

@@ -1,18 +1,30 @@
 package ksanaforge.ksanagap;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.os.Environment;
 import ksanaforge.ksanagap.jsintf.*;
-import ksanaforge.ksanagap.installer;
 import android.os.Build;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import static ksanaforge.ksanagap.R.layout.activity_main;
 import java.io.File;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,7 +32,6 @@ import java.util.List;
 public class mainActivity extends Activity {
     private String ksanapath;
     final ksanagap_droid ksanagap_api= new ksanagap_droid();//this);
-
     protected String[] dirs=null;
     protected WebView wv;
     //  final console_droid console_api= new console_droid();//this);  //already have in 4.4
@@ -28,22 +39,84 @@ public class mainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
-        dirs=getAppDirs();
+
         wv=(WebView)findViewById(R.id.webview);
         initWebview(wv);
         ksanagap_api.wv=wv;
-        ksanagap_api.dirs=dirs;
         ksanagap_api.activity=this;
+        loadApps();
+
+        Bundle extras = getIntent().getExtras();
+        String installurl="";
+        if (extras!=null) {
+            installurl=extras.getString("installapp");
+            if (!installurl.isEmpty()) installurl="#installfrom="+installurl;
+        }
+
         if (dirs==null)  welcome();
         else {
             List list=Arrays.asList(dirs);
             if (!list.contains("installer")) welcome();
             else {
                 int i=list.indexOf("installer");
-                ksanagap_api.switchApp(dirs[i]);
+                ksanagap_api.switchApp(dirs[i]+installurl);
             }
         }
+
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        registerReceiver(jsonReceiver, filter);
     }
+    public void loadApps()  {
+        dirs=getAppDirs();
+        ksanagap_api.dirs=dirs;
+    }
+    private BroadcastReceiver jsonReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            DownloadManager downloadManager= (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+
+            ArrayList<Long> downloads=ksanagap_api.downloads;
+            StringBuffer strContent = new StringBuffer("");
+            //check if the broadcast message is for our Enqueued download
+            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            int idx=downloads.indexOf(referenceId);
+            long size=0;
+            String filename="";
+            if (idx>-1) {
+                long downloadid=downloads.get(idx);
+                downloads.remove(idx);
+                if (downloads.size()==0) {
+                    ksanagap_api.finish();
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            loadApps();
+                        }
+                    });
+                }
+                try {
+                    //ParcelFileDescriptor file = downloadManager.openDownloadedFile(downloadid);
+                    filename=downloadManager.getUriForDownloadedFile(downloadid).toString().replace("file://","");
+
+                    /*
+                    DownloadManager.Query q = new DownloadManager.Query();
+                    q.setFilterById(downloadid);
+                    Cursor c = downloadManager.query(q);
+                    String filePath = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+                    */
+                    Log.d("ksanagap", "temp file" + filename);
+
+                    //} catch (FileNotFoundException e) {
+                    //    e.printStackTrace();
+                    //} catch (IOException e) {
+                    //    e.printStackTrace();
+                }finally{
+
+                }
+
+                Log.d("ksanagap","filename"+ filename+" size "+size);
+            }
+        }
+    };
     protected void initWebview(WebView myWebView) {
         //MyWebView myWebView = (MyWebView) findViewById(R.id.webview);
         myWebView.getSettings().setDomStorageEnabled(true);
@@ -97,6 +170,7 @@ public class mainActivity extends Activity {
         String appname=dirs[id-APPITEMSTART];
         ksanagap_api.switchApp(appname);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -110,5 +184,13 @@ public class mainActivity extends Activity {
             gotoApp(id);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);//must store the new intent unless getIntent() will return the old one
+        String installurl=intent.getStringExtra("installapp");
+
+        //processUrl(intent.getData());
     }
 }

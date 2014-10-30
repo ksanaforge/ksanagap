@@ -286,6 +286,7 @@ public class kfs_droid {
             try {
                 String content = new Scanner(new File(fn)).useDelimiter("\\Z").next();
                 try {
+                    content=content.substring(14,content.length()-1);
                     JSONObject obj=JSON.parse(content);
                     if (obj!=null){
                         obj.put("dbid",dirs[i]);
