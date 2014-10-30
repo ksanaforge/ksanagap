@@ -4,11 +4,9 @@ package ksanaforge.ksanagap;
  * Created by yapcheahshen on 2014/10/20.
  */
 import android.content.res.AssetManager;
-import android.os.Environment;
 
 import java.io.File;
 import java.io.*;
-import java.lang.Object;
 
 public class installer {
     static public void copySelf(AssetManager assets,String installerpath) throws IOException {

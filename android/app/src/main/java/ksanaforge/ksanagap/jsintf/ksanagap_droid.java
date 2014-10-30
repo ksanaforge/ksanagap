@@ -5,7 +5,6 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.webkit.JavascriptInterface;
 import android.util.Log;
 import android.webkit.WebView;
@@ -106,12 +105,19 @@ public class ksanagap_droid {
         return 0;
     }
 
+    public long[] getDownloadIds() {
+        long [] downloadids=new long[downloads_saved.size()];
+        for (int i=0;i<downloads_saved.size();i++) downloadids[i]= downloads_saved.get(i);
+        return downloadids;
+    }
+
     @JavascriptInterface
     public long downloadedByte() {
+        //doesn't return correct value when downloading big file
         DownloadManager.Query q = new DownloadManager.Query();
         if (downloads.size()==0) return 0;
 
-        long[] downloadids=getDownloads();
+        long[] downloadids=getDownloadIds();
         q.setFilterById(downloadids);
         Cursor cursor = downloadManager.query(q);
         cursor.moveToFirst();
@@ -121,19 +127,14 @@ public class ksanagap_droid {
             cursor.moveToNext();
         }
         cursor.close();
-        //Log.d("ksanagap","total downloaded bytes"+bytes_downloaded);
+        Log.d("ksanagap","total downloaded bytes"+bytes_downloaded);
         return bytes_downloaded;
     }
 
-    public long[] getDownloads() {
-        long [] downloadids=new long[downloads_saved.size()];
-        for (int i=0;i<downloads_saved.size();i++) downloadids[i]= downloads_saved.get(i);
-        return downloadids;
-    }
     @JavascriptInterface
     public long cancelDownload() {
 //http://stackoverflow.com/questions/14073323/is-it-possible-to-cancel-stop-a-download-started-using-downloadmanager
-        long[] downloadids=getDownloads();
+        long[] downloadids=getDownloadIds();
         downloadManager.remove(downloadids);
         return 0;
     }

@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 // receive install request and switch to main activity immediately
 public class installapp extends Activity {
-    private long jsondownloadid=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
