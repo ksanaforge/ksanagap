@@ -31,4 +31,27 @@
     NSLog(@"warn %@",message);
 }
 
+- (void) switchApp :(NSString*) app {
+    NSLog(@"switching to %@",app);
+    
+}
+- (bool) startDownload :(NSString*) dbid baseurl:(NSString*)baseurl files:(NSString*)files {
+    
+    return false;
+}
+
+-(void)cancelDownload  {
+    
+};
+-(NSString*)doneDownload  {
+    return @"";
+};
+-(NSNumber*)downloadedByte  {
+    return [NSNumber numberWithInt:0];
+}
+-(NSNumber*)downloadingFile  {
+    return [NSNumber numberWithInt:0];
+}
+
+
 @end

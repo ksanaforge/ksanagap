@@ -54,7 +54,10 @@ int TOOLBARH=44;
     fs = [[fs_ios alloc] init];
     kfs= [[kfs_ios alloc] init];
     ksanagap= [[ksanagap_ios alloc] init];
-    if ([diretories count] > 0) [self loadHomepage:diretories[0]];
+    long idx=[diretories indexOfObject:@"installer"];
+    if (idx==-1) idx=0;
+    
+    if ([diretories count] > 0) [self loadHomepage:diretories[idx]];
     
 }
 

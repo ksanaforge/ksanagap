@@ -471,6 +471,41 @@ uint32_t *phraseSearch (uint32_t** postings, uint32_t *postingsize, uint64_t npo
     return outputstr;
 }
 
+-(NSString*) listApps{
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    
+    
+    NSString *stringPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)objectAtIndex:0];
+    
+    NSArray *subFolders = [fileManager contentsOfDirectoryAtURL:[NSURL URLWithString:stringPath] includingPropertiesForKeys:@[] options:NSDirectoryEnumerationSkipsHiddenFiles error:&error];
+    
+    NSMutableArray *apps=[[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < [subFolders count]; i++) {
+        NSString *urlString = [subFolders[i] absoluteString];
+        NSString *ksanajs=[urlString stringByAppendingString:@"ksana.js"];
+        NSRange newRange =NSMakeRange(7, ksanajs.length -7 );
+        ksanajs=[ksanajs substringWithRange:newRange];
+        
+        if ([fileManager fileExistsAtPath:ksanajs]) {
+            NSData *data=[NSData dataWithContentsOfFile:ksanajs];
+            NSRange range=NSMakeRange(14,data.length-15) ;
+            data = [data subdataWithRange:range ];
+                                                       
+            NSDictionary *obj=[NSJSONSerialization JSONObjectWithData:data options: kNilOptions error:&error];
+            
+            if (obj) [apps addObject:obj];
+        }
+    }
+    
+    NSData *apps_data=[NSJSONSerialization dataWithJSONObject:apps options:NSJSONWritingPrettyPrinted error:&error];
+    NSString *outstr=[[NSString alloc] initWithData:apps_data encoding:NSUTF8StringEncoding];
+    return outstr;
+    
+}
+
 
 
 @end

@@ -19,6 +19,7 @@ JSExportAs(readStringArray,  - (NSString *)readStringArray:(NSNumber *)handle po
 
 JSExportAs(readDir,          - (NSString*)readDir:(NSString*)path);
 JSExportAs(mergePostings,    - (NSString*) mergePostings:(NSNumber*)handle positions:(NSArray*)positions);
+-(NSString*) listApps;
 @end  
 
 @interface kfs_ios: NSObject <KFSExport>
