@@ -141,6 +141,8 @@ public class JSON {
             out+="\""+item.toString()+"\"";
         } else if (item instanceof Integer) {
             out+=item.toString();
+        } else if (item instanceof Boolean) {
+            out+=item.toString();
         }
         return out;
     }

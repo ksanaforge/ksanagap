@@ -5,10 +5,12 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.webkit.JavascriptInterface;
 import android.util.Log;
 import android.webkit.WebView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
@@ -70,40 +72,41 @@ public class ksanagap_droid {
     protected ArrayList<Long> downloads_saved=new ArrayList();
     public long downloadedbyte=0;
 
-/*
-    protected void download(String url,String targetfile) {
-        DownloadManager downloadManager= (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setDestinationInExternalPublicDir("/accelon/yinshun/",targetfile);
-        jsondownloadid=downloadManager.enqueue(request);
-    }*/
+    private void deleteFileIfExists( String filename) {
+        File f1 = new File(filename);
+        if (f1.exists()) {
+            Log.d("ksanagap","delete"+filename);
+            f1.delete();
+        }
+    }
 @JavascriptInterface
     public boolean startDownload(String dbid, String baseurl, String _files) {
-        if (downloading) return false;
-        String[] files=_files.split("\uffff");
-        downloads_saved.clear();
-        downloads.clear();
-        downloadManager = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
+    if (downloading) return false;
+    String[] files=_files.split("\uffff");
+    downloads_saved.clear();
+    downloads.clear();
+    downloadManager = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
 
     for (int i=0;i<files.length;i++) {
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(baseurl+files[i]));
-            request.setTitle("dbid:"+files[i]);
-            //Set a description of this download, to be displayed in notifications (if enabled)
-            request.setDescription(baseurl+files[i]);
-            request.setDestinationInExternalPublicDir("/accelon/"+dbid,files[i]);
-        //Environment.DIRECTORY_DOWNLOADS
-            long id=downloadManager.enqueue(request);
-            downloads.add(id);
-            downloads_saved.add(id);
-        }
-        return true;
+        deleteFileIfExists(ksanapath+dbid+'/'+files[i]);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(baseurl+files[i]));
+        request.setTitle(dbid+":"+files[i]);
+        //Set a description of this download, to be displayed in notifications (if enabled)
+        request.setDescription(baseurl+files[i]);
+        request.setDestinationInExternalPublicDir("/accelon/"+dbid,files[i]);
+    //Environment.DIRECTORY_DOWNLOADS
+        long id=downloadManager.enqueue(request);
+        downloads.add(id);
+        downloads_saved.add(id);
     }
+    return true;
+}
 
 
     @JavascriptInterface
     public long downloadingFile() {
         return 0;
-    }
+    } //file is downloaded in parallel
 
     public long[] getDownloadIds() {
         long [] downloadids=new long[downloads_saved.size()];
@@ -128,7 +131,6 @@ public class ksanagap_droid {
             else cursor.moveToNext();
         } while (true);
         cursor.close();
-        Log.d("ksanagap","total downloaded bytes"+bytes_downloaded);
         return bytes_downloaded;
     }
 
