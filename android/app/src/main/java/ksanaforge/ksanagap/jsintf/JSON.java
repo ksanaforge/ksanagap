@@ -1,11 +1,14 @@
 package ksanaforge.ksanagap.jsintf;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -125,5 +128,58 @@ public class JSON {
             e.printStackTrace();
         }
         return res;
+    }
+    public static String stringify(Object item){
+        String out="";
+        if (item instanceof JSONObject) {
+            out+=stringify((JSONObject)item);
+        } else if (item instanceof JSONArray) {
+            out+=stringify((JSONArray)item);
+        } else if (item instanceof ArrayList) {
+            out+=stringify((ArrayList)item);
+        } else if (item instanceof String) {
+            out+="\""+item.toString()+"\"";
+        } else if (item instanceof Integer) {
+            out+=item.toString();
+        }
+        return out;
+    }
+    public static String stringify(JSONObject obj) {
+        Iterator<String> keys = obj.keys();
+        String out="";
+        while(keys.hasNext()) {
+            Object item= null;
+            String key=keys.next();
+            try {
+                item = obj.get(key);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (out.length()>0) out+=",";
+            out+=  '\"'+key+"\":"+stringify(item);
+        }
+        return "{"+out+"}";
+    }
+    public static String stringify(JSONArray arr) {
+        String out="[";
+        for (int i=0;i<arr.length();i++) {
+            try {
+                out+=stringify(arr.get(i));
+                if (i<arr.length()-1) out+=",";
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        out+="]";
+        return out;
+    }
+    public static String stringify(ArrayList arr) {
+        String out="[";
+        for (int i=0;i<arr.size();i++) {
+            out+=stringify(arr.get(i));
+            if (i<arr.size()-1) out+=",";
+        }
+        out+="]";
+        return out;
     }
 }

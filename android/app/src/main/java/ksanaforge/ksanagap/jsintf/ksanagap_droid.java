@@ -122,10 +122,11 @@ public class ksanagap_droid {
         Cursor cursor = downloadManager.query(q);
         cursor.moveToFirst();
         int bytes_downloaded=0;
-        while (!cursor.isLast()) {
+        do {
             bytes_downloaded += cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-            cursor.moveToNext();
-        }
+            if (cursor.isLast()) break;
+            else cursor.moveToNext();
+        } while (true);
         cursor.close();
         Log.d("ksanagap","total downloaded bytes"+bytes_downloaded);
         return bytes_downloaded;

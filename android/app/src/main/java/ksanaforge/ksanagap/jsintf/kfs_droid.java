@@ -1,5 +1,6 @@
 package ksanaforge.ksanagap.jsintf;
 
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import java.io.File;
@@ -274,7 +275,7 @@ public class kfs_droid {
         return out;
     }
     @JavascriptInterface
-    public String listApps() {
+    public String listApps()  {
 
         String[] dirs=readDir("..").split("\uffff");
         File f=null;
@@ -301,6 +302,7 @@ public class kfs_droid {
             }
 
         }
-        return array.toString();
+        String str= JSON.stringify(array);
+        return str;
     }
 }
