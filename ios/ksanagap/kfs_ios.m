@@ -485,6 +485,7 @@ uint32_t *phraseSearch (uint32_t** postings, uint32_t *postingsize, uint64_t npo
     
     for (int i = 0; i < [subFolders count]; i++) {
         NSString *urlString = [subFolders[i] absoluteString];
+        NSString *dbid=[urlString lastPathComponent];
         NSString *ksanajs=[urlString stringByAppendingString:@"ksana.js"];
         NSRange newRange =NSMakeRange(7, ksanajs.length -7 );
         ksanajs=[ksanajs substringWithRange:newRange];
@@ -496,7 +497,12 @@ uint32_t *phraseSearch (uint32_t** postings, uint32_t *postingsize, uint64_t npo
                                                        
             NSDictionary *obj=[NSJSONSerialization JSONObjectWithData:data options: kNilOptions error:&error];
             
-            if (obj) [apps addObject:obj];
+            if (obj) {
+                NSMutableDictionary *o=[obj mutableCopy];
+                [o setObject:dbid forKey:@"dbid"];
+                [o setObject:dbid forKey:@"path"];
+                [apps addObject:o];
+            }
         }
     }
     
