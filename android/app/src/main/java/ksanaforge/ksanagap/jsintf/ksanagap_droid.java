@@ -88,7 +88,7 @@ public class ksanagap_droid {
     downloadManager = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
 
     for (int i=0;i<files.length;i++) {
-        deleteFileIfExists(ksanapath+dbid+'/'+files[i]);
+        deleteFileIfExists(ksanapath+dbid+'/'+files[i]); //Download Manager does not overwrite existing file
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(baseurl+files[i]));
         request.setTitle(dbid+":"+files[i]);
         //Set a description of this download, to be displayed in notifications (if enabled)
