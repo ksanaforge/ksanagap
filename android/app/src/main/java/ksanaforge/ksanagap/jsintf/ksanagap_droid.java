@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.List;
 
+import ksanaforge.ksanagap.R;
+
 /**
  * Created by yapcheahshen on 2014/10/2.
  */
@@ -29,7 +31,8 @@ public class ksanagap_droid {
     public String[] dirs=null;
     public Activity activity=null;
     protected String downloadresult="";
-
+    protected String[] downloadingfiles=null;
+    protected String dbid="";
     public ksanagap_droid(){//Context c) {
         // mContext = c;
     }
@@ -79,21 +82,33 @@ public class ksanagap_droid {
             f1.delete();
         }
     }
+
+    protected void deleteTempfiles() {
+        File temp=new File(ksanapath+".tmp");
+        if (!temp.exists()) return;
+        File [] filestodelete=temp.listFiles();
+        for (int i=0;i<filestodelete.length;i++){
+            filestodelete[i].delete();
+        }
+    }
 @JavascriptInterface
-    public boolean startDownload(String dbid, String baseurl, String _files) {
+    public boolean startDownload(String _dbid, String baseurl, String _files) {
     if (downloading) return false;
-    String[] files=_files.split("\uffff");
+    dbid=_dbid;
+    downloadingfiles=_files.split("\uffff");
     downloads_saved.clear();
     downloads.clear();
     downloadManager = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
-
-    for (int i=0;i<files.length;i++) {
-        deleteFileIfExists(ksanapath+dbid+'/'+files[i]); //Download Manager does not overwrite existing file
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(baseurl+files[i]));
-        request.setTitle(dbid+":"+files[i]);
+    deleteTempfiles();
+    for (int i=0;i<downloadingfiles.length;i++) {
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(baseurl+downloadingfiles[i]));
+        request.setTitle(dbid+":"+downloadingfiles[i]);
         //Set a description of this download, to be displayed in notifications (if enabled)
-        request.setDescription(baseurl+files[i]);
-        request.setDestinationInExternalPublicDir("/accelon/"+dbid,files[i]);
+        request.setDescription(baseurl+downloadingfiles[i]);
+
+        //request.setDestinationInExternalPublicDir("/accelon/"+dbid,files[i]);
+        request.setDestinationInExternalPublicDir("/"+activity.getString(R.string.app_rootpath)+"/.tmp",downloadingfiles[i]);
+
     //Environment.DIRECTORY_DOWNLOADS
         long id=downloadManager.enqueue(request);
         downloads.add(id);
@@ -149,6 +164,21 @@ public class ksanagap_droid {
     }
     public void finish() {
         downloadresult = "success";
+        //create directory if not exists
+
+        File targetpath=new File(ksanapath + dbid + '/');
+        if (!targetpath.exists()) targetpath.mkdirs();
+
+        for (int i=0;i<downloadingfiles.length;i++) {
+            String oldfile=ksanapath + dbid + "/" + downloadingfiles[i];
+            String newfile=ksanapath + ".tmp/" + downloadingfiles[i];
+            deleteFileIfExists(oldfile); //Download Manager does not overwrite existing file
+            File from=new File(newfile);
+            File to=new File(oldfile);
+            from.renameTo(to);
+        }
     }
+
+
 
 }

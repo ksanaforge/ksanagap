@@ -1,0 +1,20 @@
+{
+  "name": "installer",
+  "description": "New html5 application",
+  "version": "0.0.1",
+  "inject-js-start": "nodemain.js",
+  "inject-js-end": "systemmenu.js",
+  "main": "index.html",
+  "single-instance":false,
+  "window": {
+    "toolbar": true,
+    "width": 1152,
+    "height": 800
+  },
+ "repositories": [
+  {
+    "type": "git", 
+    "url": "https://github.com/ksanaforge/installer.git"
+  }  
+  ]
+}

@@ -56,8 +56,9 @@ public class mainActivity extends Activity {
         if (dirs==null)  welcome();
         else {
             List list=Arrays.asList(dirs);
-            if (!list.contains("installer")) welcome();
-            else {
+            if (!list.contains("installer")) {
+                welcome();
+            }  else {
                 int i=list.indexOf("installer");
                 ksanagap_api.switchApp(dirs[i]+installurl);
             }
@@ -133,6 +134,7 @@ public class mainActivity extends Activity {
         String installerpath= Environment.getExternalStorageDirectory() +"/"+this.getString(R.string.app_rootpath)+"/installer/";
         try {
             installer.copySelf(getAssets(),installerpath);
+            loadApps();
             ksanagap_api.switchApp("installer");
         } catch (IOException e) {
             e.printStackTrace();
@@ -153,7 +155,7 @@ public class mainActivity extends Activity {
             String[] directories = file.list(new FilenameFilter() {
                 @Override
                 public boolean accept(File current, String name) {
-                    return new File(current, name).isDirectory();
+                    return name.charAt(0)!='.' && new File(current, name).isDirectory();
                 }
             });
             return directories;
@@ -177,12 +179,7 @@ public class mainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_installer) {
-            ksanagap_api.switchApp("installer");
-            return true;
-        } else {
-            gotoApp(id);
-        }
+        gotoApp(id);
         return super.onOptionsItemSelected(item);
     }
 

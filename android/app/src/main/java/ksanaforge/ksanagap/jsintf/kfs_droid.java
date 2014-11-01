@@ -282,6 +282,7 @@ public class kfs_droid {
         JSONArray array = new JSONArray();
         for (int i=0;i<dirs.length;i++) {
             String fn=parentPath()+dirs[i]+"/ksana.js";
+            if (dirs[i].charAt(0)=='.') continue;
             f= new File(fn);
             if (!f.exists()) continue;
             try {

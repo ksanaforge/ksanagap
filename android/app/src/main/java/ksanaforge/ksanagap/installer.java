@@ -11,7 +11,8 @@ import java.io.*;
 public class installer {
     static public void copySelf(AssetManager assets,String installerpath) throws IOException {
 
-        String[] filenames = {"index.html","jquery.js","react-with-addons.js","build.css","build.js"};
+        String[] filenames = {"index.html","jquery.js","react-with-addons.js","build.css","build.js",
+                "nodemain.js","systemmenu.js","package.json","banner.png","ksana.js"};
 
         final File path = new File(installerpath);
         if (!path.exists()) path.mkdirs();
@@ -20,9 +21,6 @@ public class installer {
             InputStream input=assets.open(filenames[i]);
             copy(input, installerpath+filenames[i]);
         }
-    }
-    static public void start() {
-
     }
     static void copy(InputStream in, String dst) throws IOException {
         OutputStream out = new FileOutputStream(dst);

@@ -7117,9 +7117,13 @@ td.visible-print {
   }
 }
 
-
-
-
-.main {}
+.main {font-size:200%;}
 .comp1 {}
-#main {}
+.installed {}
+a.caption {cursor:pointer;}
+.version {font-size:50%;}
+.banner {width:auto;max-height:140px;}
+
+
+
+.download {}
