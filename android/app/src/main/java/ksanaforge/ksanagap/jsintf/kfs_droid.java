@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ksanaforge.ksanagap.jsintf.JSON;
+import ksanaforge.ksanagap.mainActivity;
 
 /**
  * Created by yapcheahshen on 2014/10/7.
@@ -26,6 +27,8 @@ public class kfs_droid {
     static Collection<FilePointer> filePointers = new ArrayList<FilePointer>();
     static int f_count = 0;
     static String rootpath= "";
+    public mainActivity activity=null;
+
     public kfs_droid(){//Context c) {
         // mContext = c;
     }
@@ -248,12 +251,7 @@ public class kfs_droid {
         return str;
     }
 
-    protected String parentPath() {
-        int last = rootpath.lastIndexOf("/");
-        String path=rootpath.substring(0,last);
-        last = path.lastIndexOf("/");
-        return  path.substring(0,last+1);
-    }
+
     @JavascriptInterface
     public String readDir(String path) {
         String out="";
@@ -274,9 +272,9 @@ public class kfs_droid {
         }
         return out;
     }
+
     @JavascriptInterface
     public String listApps()  {
-
         String[] dirs=readDir("..").split("\uffff");
         File f=null;
         JSONArray array = new JSONArray();
@@ -306,4 +304,36 @@ public class kfs_droid {
         String str= JSON.stringify(array);
         return str;
     }
+
+
+    protected String parentPath() {
+        int last = rootpath.lastIndexOf("/");
+        String path=rootpath.substring(0,last);
+        last = path.lastIndexOf("/");
+        return  path.substring(0,last+1);
+    }
+    void DeleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles())
+                DeleteRecursive(child);
+
+        fileOrDirectory.delete();
+    }
+
+    @JavascriptInterface
+    public void deleteApp(String appname) {
+        if (appname=="" || appname=="installer") return;//cannot remove installer
+        File appfolder=new File(parentPath()+appname);
+        if (appfolder.exists()) DeleteRecursive(appfolder);
+
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                activity.setTitle("installer");
+                activity.loadApps();
+                activity.getWebView().loadUrl("file://" + activity.getKsanapath() + "/installer/index.html");
+            }
+        });
+
+    }
+
 }

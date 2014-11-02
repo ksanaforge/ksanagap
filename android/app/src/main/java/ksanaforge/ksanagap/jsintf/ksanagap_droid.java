@@ -5,6 +5,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.webkit.JavascriptInterface;
 import android.util.Log;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ksanaforge.ksanagap.R;
+import ksanaforge.ksanagap.mainActivity;
 
 /**
  * Created by yapcheahshen on 2014/10/2.
@@ -27,16 +29,17 @@ public class ksanagap_droid {
     public fs_droid fs_api= new fs_droid();//this);
     public kfs_droid kfs_api= new kfs_droid();
     public String ksanapath="";
-    public WebView wv=null;
-    public String[] dirs=null;
-    public Activity activity=null;
+    public mainActivity activity=null;
     protected String downloadresult="";
     protected String[] downloadingfiles=null;
     protected String dbid="";
     public ksanagap_droid(){//Context c) {
         // mContext = c;
     }
-
+    @JavascriptInterface
+    public int android() {
+        return Build.VERSION.SDK_INT;
+    }
     @JavascriptInterface
     public void log(String msg){
         Log.d("ksanagap",msg);
@@ -55,7 +58,7 @@ public class ksanagap_droid {
             Path=Path.substring(0,hashash);
         }
         final String hashtag=hash;
-        List list= Arrays.asList(dirs);
+        List list= Arrays.asList(activity.getDirs());
         if (!list.contains(Path)) return;
         final String path=Path;
         sdpath=ksanapath+Path+"/";
@@ -64,7 +67,7 @@ public class ksanagap_droid {
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 activity.setTitle(path);
-                wv.loadUrl("file://" + sdpath + "index.html"+ hashtag);
+                activity.getWebView().loadUrl("file://" + sdpath + "index.html"+ hashtag);
             }
         });
 
@@ -156,6 +159,7 @@ public class ksanagap_droid {
         downloadManager.remove(downloadids);
         return 0;
     }
+
 
     @JavascriptInterface
     public String doneDownload() {

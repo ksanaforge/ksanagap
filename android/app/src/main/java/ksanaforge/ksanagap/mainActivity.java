@@ -35,6 +35,13 @@ public class mainActivity extends Activity {
     protected String[] dirs=null;
     protected WebView wv;
     //  final console_droid console_api= new console_droid();//this);  //already have in 4.4
+
+    public String getKsanapath() {
+        return ksanapath;
+    }
+    public WebView getWebView() {
+        return wv;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,8 +49,9 @@ public class mainActivity extends Activity {
 
         wv=(WebView)findViewById(R.id.webview);
         initWebview(wv);
-        ksanagap_api.wv=wv;
         ksanagap_api.activity=this;
+        ksanagap_api.kfs_api.activity=this;
+
         loadApps();
 
         Bundle extras = getIntent().getExtras();
@@ -69,7 +77,9 @@ public class mainActivity extends Activity {
     }
     public void loadApps()  {
         dirs=getAppDirs();
-        ksanagap_api.dirs=dirs;
+    }
+    public String[] getDirs() {
+        return dirs;
     }
     private BroadcastReceiver jsonReceiver = new BroadcastReceiver() {
         @Override
