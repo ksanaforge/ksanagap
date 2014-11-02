@@ -218,6 +218,13 @@ if (typeof process !="undefined") {
 	window.ksanagap.platform="chrome";
 	window.kfs=require("./kfs_html5");
 	ksana.platform="chrome";
+} else {
+	if (typeof ksanagap!="undefined" ) {
+		ksana.platform=ksanagap.platform;
+		if (typeof ksanagap.android !="undefined") {
+			ksana.platform="android";
+		}
+	}
 }
 
 //if (typeof React=="undefined") window.React=require('../react');
@@ -248,6 +255,9 @@ if (typeof process!="undefined") {
 	rootPath=process.cwd();
 	rootPath=nodeRequire("path").resolve(rootPath,"..").replace(/\\/g,"/")+'/';
 }
+var deleteApp=function(app) {
+	console.error("not allow on PC, do it in File Explorer/ Finder");
+}
 var ksanagap={
 	platform:"node-webkit",
 	startDownload:downloader.startDownload,
@@ -256,7 +266,8 @@ var ksanagap={
 	cancelDownload:downloader.cancelDownload,
 	doneDownload:downloader.doneDownload,
 	switchApp:switchApp,
-	rootPath:rootPath
+	rootPath:rootPath,
+	deleteApp: deleteApp
 }
 
 
@@ -408,6 +419,8 @@ var listApps=function() {
 	})
 	return JSON.stringify(out);
 }
+
+
 
 var kfs={readDir:readDir,listApps:listApps};
 
@@ -3675,7 +3688,7 @@ var installed = React.createClass({displayName: 'installed',
 
     //delete button is distracting, wait for 3 second
     clearTimeout(this.timer);
-    if (ksanagap.platform=="ios" || ksanagap.platform=="android") {
+    if (ksana.platform=="ios" || ksana.platform=="android") {
       this.timer=setTimeout(this.showDeleteButton,3000);
     }
     this.props.action("select",this.state.installed[target.dataset.i]);
@@ -3690,9 +3703,13 @@ var installed = React.createClass({displayName: 'installed',
       return React.DOM.a({'data-n': idx, onClick: this.askDownload, className: "btn btn-warning"}, "Update")
     }
   },
+  deleteApp:function(e) {
+    var path=e.target.dataset['path'];
+    if (path && path!="installer") kfs.deleteApp(path);
+  },
   renderDeleteButton:function(item,idx) {
-    if (idx==this.state.selected && this.state.deletable) {
-      return React.DOM.a({className: "btn btn-danger pull-right"}, "×")
+    if (idx==this.state.selected && this.state.deletable && item.path!="installer") {
+      return React.DOM.a({'data-path': item.path, onClick: this.deleteApp, className: "btn btn-danger pull-right"}, "×")
     }
   },
   renderCaption:function(item,idx) {
@@ -3714,7 +3731,7 @@ var installed = React.createClass({displayName: 'installed',
   },
   renderWelcome:function() {
     //if (this.state.installed && this.state.installed.length<2)  
-    return ( React.DOM.div(null, React.DOM.hr(null), React.DOM.a({onClick: this.goAccelonWebsite, href: "#"}, "Download Accelon Apps")) );
+    return ( React.DOM.div(null, React.DOM.hr(null), React.DOM.a({onClick: this.goAccelonWebsite, href: "#"}, "Get Accelon Database")) );
     //else return <span></span>;
   },
   goAccelonWebsite:function() {
@@ -3883,8 +3900,8 @@ var download = React.createClass({displayName: 'download',
     return (
       React.DOM.div(null, 
         React.DOM.a({onClick: this.backFromDownload, className: "btn btn-warning"}, "Back"), React.DOM.br(null), 
-        "App to download:", this.props.app.title, " (", this.props.app.dbid, ") ", React.DOM.br(null), 
-        "Total size: ", React.DOM.span(null, this.humanSize()), React.DOM.br(null), 
+        this.props.app.title, " (", this.props.app.dbid, ")", React.DOM.br(null), 
+        "Download Size: ", React.DOM.span(null, this.humanSize()), React.DOM.br(null), 
         React.DOM.div(null, 
             React.DOM.div({className: "col-sm-2 col-sm-offset-5"}, 
               React.DOM.a({onClick: this.startDownload, className: "btn btn-primary btn-lg"}, "Download")
@@ -3902,7 +3919,7 @@ var download = React.createClass({displayName: 'download',
       React.DOM.div(null, 
         React.DOM.a({onClick: this.backFromDownload, className: "btn btn-warning"}, "Back"), React.DOM.br(null), 
 
-        React.DOM.div(null, "Download Finished ", this.props.app.title), 
+        React.DOM.div(null, "Download Completed ", this.props.app.title), 
         React.DOM.div(null, "Status : ", this.state.done, " "), 
         React.DOM.div({className: "col-sm-2 col-sm-offset-5"}, 
             React.DOM.a({onClick: this.openapp, className: "btn btn-success btn-lg"}, "Start"), React.DOM.br(null)

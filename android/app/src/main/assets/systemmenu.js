@@ -1,10 +1,13 @@
 var switchApp=function(path) {
-  process.chdir("../"+path);
-  document.location.href= "../"+path+"/index.html";
+  var fs=nodeRequire("fs");
+  if (fs.existsSync("../"+path)) {
+    process.chdir("../"+path);
+    document.location.href= "../"+path+"/index.html";
+  }
 }
 
-var appmenuclick=function(app) {
-  switchApp(app.path);
+var appmenuclick=function(dbid) {
+  switchApp(dbid);
 }
 
 var goHome=function() {
@@ -16,17 +19,22 @@ var createMenu=function(apps) {
   var gui = nodeRequire('nw.gui');
   var mb = new gui.Menu({type:"menubar"});
   var appsMenu= new gui.Menu();
-  var appsItem = new gui.MenuItem({ label: 'Apps' });
+  var appsItem = new gui.MenuItem({ label: 'Database' });
+
   apps.map(function(app) {
     if (app.path=="installer") return;
-    appsMenu.append(new gui.MenuItem({ label: app.title, click:appmenuclick.bind(null,app)}));
+    appsMenu.append(new gui.MenuItem({ label: app.title, click:appmenuclick.bind(null,app.path)}));
   });
+
+  appsMenu.append( new gui.MenuItem({ type: 'separator' }));  
+  appsMenu.append(new gui.MenuItem({ label: "Home", click:appmenuclick.bind(null,"installer")}));
 
   appsItem.submenu=appsMenu;
   if (mb.createMacBuiltin) mb.createMacBuiltin("node-webkit");
   mb.append(appsItem);
-  var homeItem = new gui.MenuItem({ label: 'Home' ,click:goHome});
-  mb.append(homeItem);
+
+  var downloadItem = new gui.MenuItem({ label: 'Get Accelon Database' ,click:goAccelonWebsite});
+  mb.append(downloadItem);
 
   gui.Window.get().menu = mb; 
 }
@@ -38,18 +46,12 @@ var createAppMenu=function(){
 var timer1=setTimeout(function(){
       if (typeof kfs!="undefined") {
             createAppMenu();
-            //handle_reopen();
-            //console.log("handle reopen")
             clearInterval(timer1);
       }
 },200);
-/*
-var handle_reopen=function() {
-  var gui = nodeRequire('nw.gui');
-  console.log("REOPEN");
-  gui.App.on("reopen", function(){
-             appWindow.focus();
-             appWindow.focus(); // calling it twice is more reliable. weirdly
-  });  
-}
-*/
+
+var goAccelonWebsite=function() {
+  var gui = nodeRequire('nw.gui'); 
+  gui.Shell.openExternal('http://accelon.github.io'); 
+};
+
