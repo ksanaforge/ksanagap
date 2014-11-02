@@ -1,18 +1,18 @@
 package ksanaforge.ksanagap.jsintf;
-import android.app.Activity;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.DownloadManager;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.webkit.JavascriptInterface;
 import android.util.Log;
-import android.webkit.WebView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +42,7 @@ public class ksanagap_droid {
     }
     @JavascriptInterface
     public void log(String msg){
-        Log.d("ksanagap",msg);
+        Log.d("ksanagap", msg);
     }
 
     @JavascriptInterface
@@ -67,7 +67,7 @@ public class ksanagap_droid {
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 activity.setTitle(path);
-                activity.getWebView().loadUrl("file://" + sdpath + "index.html"+ hashtag);
+                activity.getWebView().loadUrl("file://" + sdpath + "index.html" + hashtag);
             }
         });
 
@@ -182,7 +182,33 @@ public class ksanagap_droid {
             from.renameTo(to);
         }
     }
+    public List getEmails() {
+        AccountManager manager = AccountManager.get(activity);
+        Account[] accounts = manager.getAccountsByType("com.google");
+        List<String> possibleEmails = new LinkedList<String>();
 
+        for (Account account : accounts) {
+            // TODO: Check possibleEmail against an email regex or treat
+            // account.name as an email address only for certain account.type values.
+            possibleEmails.add(account.name);
+        }
+        return possibleEmails;
+    }
 
-
+    @JavascriptInterface
+    public String useremail() {
+        List<String> possibleEmails=getEmails();
+        if (!possibleEmails.isEmpty()) return possibleEmails.get(0);
+        return "";
+    }
+    @JavascriptInterface
+    public String username(){
+        List<String> possibleEmails=getEmails();
+        if(!possibleEmails.isEmpty() && possibleEmails.get(0) != null){
+            String email = possibleEmails.get(0);
+            String[] parts = email.split("@");
+            if(parts.length > 0 && parts[0] != null) return parts[0];
+            else return "";
+        }else return "";
+    }
 }

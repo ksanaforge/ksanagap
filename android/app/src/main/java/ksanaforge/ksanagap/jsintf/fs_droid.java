@@ -1,14 +1,8 @@
 package ksanaforge.ksanagap.jsintf;
 import java.io.*;
-import java.nio.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import android.content.Context;
-import android.provider.MediaStore;
 import android.webkit.JavascriptInterface;
-import android.util.Log;
-import java.util.Arrays;
 
 /**
  * Created by yapcheahshen on 2014/10/2.

@@ -1,6 +1,5 @@
 package ksanaforge.ksanagap.jsintf;
 
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import java.io.File;
@@ -16,7 +15,7 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ksanaforge.ksanagap.jsintf.JSON;
+
 import ksanaforge.ksanagap.mainActivity;
 
 /**
