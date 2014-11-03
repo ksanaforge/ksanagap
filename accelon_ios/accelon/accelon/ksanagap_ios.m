@@ -14,9 +14,11 @@
 
 - (id)init {
     self = [super init];
-    session=[NSURLSession sharedSession];
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    session=[NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
     downloading=false;
     vc=nil;
+    downloadresult=nil;
     return self;
 }
 
@@ -46,7 +48,29 @@
         [(ViewController*)(vc) loadHomepage:app];
     });
 }
+
+-(void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location{
+      downloadedFiles++;
+}
+
+-(void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite{
+    downloadedBytes+=bytesWritten;
+}
+
+- (void) addDownload : (NSURL*) url {
+    NSURLSessionDownloadTask *downloadTask=[session downloadTaskWithURL:url];
+    [downloadTask resume];
+}
+
 - (bool) startDownload :(NSString*) dbid baseurl:(NSString*)baseurl files:(NSString*)files {
+    downloadingFiles =[files componentsSeparatedByString:@"\uffff"];
+    downloadedFiles=0;
+    downloadedBytes=0;
+    for (int i=0;i<[downloadingFiles count];i++) {
+        NSString *url=[baseurl stringByAppendingString:[downloadingFiles objectAtIndex:i]];
+        NSURL *nsurl=[[NSURL alloc] initWithString:url];
+        [self addDownload :nsurl];
+    }
     return true;
 }
 
@@ -54,10 +78,11 @@
     
 };
 -(NSString*)doneDownload  {
-    return @"success";
+    if (downloadedFiles==[downloadingFiles count]) return @"success";
+    else return downloadresult;
 };
 -(NSNumber*)downloadedByte  {
-    return [NSNumber numberWithInt:0];
+    return [NSNumber numberWithLongLong:downloadedBytes];
 }
 -(NSNumber*)downloadingFile  {
     return [NSNumber numberWithInt:0];

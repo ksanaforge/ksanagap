@@ -23,10 +23,15 @@ JSExportAs(startDownload, -(bool)startDownload:(NSString*) dbid baseurl:(NSStrin
 @end
 
 
-@interface ksanagap_ios: NSObject <KGExport> {
+@interface ksanagap_ios: NSObject <KGExport, NSURLSessionDataDelegate> {
     NSURLSession *session;
     bool downloading;
     UIViewController *vc;
+    NSString *downloadresult;
+    int downloadedFiles;
+    int64_t downloadedBytes;
+    NSArray *downloadingFiles;
+    
 }
 
 
