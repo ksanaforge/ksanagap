@@ -8,8 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@protocol UIMyWebViewDelegate <UIWebViewDelegate>
+    @optional
+    - (void)loadHomepage:(NSString *)appName ;
+@end
 
 
+@interface ViewController : UIViewController <UIMyWebViewDelegate>
 @end
 

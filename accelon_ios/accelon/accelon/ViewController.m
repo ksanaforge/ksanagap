@@ -13,7 +13,7 @@
 #import "ksanagap_ios.h"
 
 
-@interface ViewController () <UIWebViewDelegate> {
+@interface ViewController () <UIMyWebViewDelegate> {
     UIWebView *webView;
     UIToolbar *toobar;
     UIBarButtonItem *menuButton;
@@ -53,7 +53,12 @@ int TOOLBARH=44;
     
     fs = [[fs_ios alloc] init];
     kfs= [[kfs_ios alloc] init];
+    
+
     ksanagap= [[ksanagap_ios alloc] init];
+    [ksanagap setViewController:self];
+    
+    
     long idx=[diretories indexOfObject:@"installer"];
     if (idx==-1) idx=0;
     

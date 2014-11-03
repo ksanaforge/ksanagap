@@ -16,7 +16,7 @@
 		0183DFB219FAA8DD008E1249 /* accelonTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DFB119FAA8DD008E1249 /* accelonTests.m */; };
 		0183DFC119FAAABC008E1249 /* fs_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DFBC19FAAABC008E1249 /* fs_ios.m */; };
 		0183DFC219FAAABC008E1249 /* kfs_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DFBE19FAAABC008E1249 /* kfs_ios.m */; };
-		0183DFC319FAAABC008E1249 /* ksanagap_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DFC019FAAABC008E1249 /* ksanagap_ios.m */; };
+		01DFE5C01A07BEB300939B7B /* ksanagap_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 01DFE5BF1A07BEB300939B7B /* ksanagap_ios.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,8 +47,8 @@
 		0183DFBC19FAAABC008E1249 /* fs_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = fs_ios.m; path = ../../../ios/ksanagap/fs_ios.m; sourceTree = "<group>"; };
 		0183DFBD19FAAABC008E1249 /* kfs_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kfs_ios.h; path = ../../../ios/ksanagap/kfs_ios.h; sourceTree = "<group>"; };
 		0183DFBE19FAAABC008E1249 /* kfs_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = kfs_ios.m; path = ../../../ios/ksanagap/kfs_ios.m; sourceTree = "<group>"; };
-		0183DFBF19FAAABC008E1249 /* ksanagap_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ksanagap_ios.h; path = ../../../ios/ksanagap/ksanagap_ios.h; sourceTree = "<group>"; };
-		0183DFC019FAAABC008E1249 /* ksanagap_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ksanagap_ios.m; path = ../../../ios/ksanagap/ksanagap_ios.m; sourceTree = "<group>"; };
+		01DFE5BE1A07BEB300939B7B /* ksanagap_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ksanagap_ios.h; sourceTree = "<group>"; };
+		01DFE5BF1A07BEB300939B7B /* ksanagap_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ksanagap_ios.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,12 +90,12 @@
 		0183DF9419FAA8DD008E1249 /* accelon */ = {
 			isa = PBXGroup;
 			children = (
+				01DFE5BE1A07BEB300939B7B /* ksanagap_ios.h */,
+				01DFE5BF1A07BEB300939B7B /* ksanagap_ios.m */,
 				0183DFBB19FAAABC008E1249 /* fs_ios.h */,
 				0183DFBC19FAAABC008E1249 /* fs_ios.m */,
 				0183DFBD19FAAABC008E1249 /* kfs_ios.h */,
 				0183DFBE19FAAABC008E1249 /* kfs_ios.m */,
-				0183DFBF19FAAABC008E1249 /* ksanagap_ios.h */,
-				0183DFC019FAAABC008E1249 /* ksanagap_ios.m */,
 				0183DF9919FAA8DD008E1249 /* AppDelegate.h */,
 				0183DF9A19FAA8DD008E1249 /* AppDelegate.m */,
 				0183DF9C19FAA8DD008E1249 /* ViewController.h */,
@@ -237,7 +237,7 @@
 				0183DFC219FAAABC008E1249 /* kfs_ios.m in Sources */,
 				0183DF9E19FAA8DD008E1249 /* ViewController.m in Sources */,
 				0183DF9B19FAA8DD008E1249 /* AppDelegate.m in Sources */,
-				0183DFC319FAAABC008E1249 /* ksanagap_ios.m in Sources */,
+				01DFE5C01A07BEB300939B7B /* ksanagap_ios.m in Sources */,
 				0183DFC119FAAABC008E1249 /* fs_ios.m in Sources */,
 				0183DF9819FAA8DD008E1249 /* main.m in Sources */,
 			);
@@ -432,6 +432,7 @@
 				0183DFB719FAA8DD008E1249 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0183DFB819FAA8DD008E1249 /* Build configuration list for PBXNativeTarget "accelonTests" */ = {
 			isa = XCConfigurationList;
@@ -440,6 +441,7 @@
 				0183DFBA19FAA8DD008E1249 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

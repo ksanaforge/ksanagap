@@ -16,7 +16,12 @@
     self = [super init];
     session=[NSURLSession sharedSession];
     downloading=false;
+    vc=nil;
     return self;
+}
+
+-(void) setViewController : (UIViewController*)_vc {
+    vc=_vc;
 }
 
 - (NSString *) platform {
@@ -36,10 +41,12 @@
 }
 
 - (void) switchApp :(NSString*) app {
-    NSLog(@"switching to %@",app); 
+    NSLog(@"switching to %@",app);
+    dispatch_async(dispatch_get_main_queue(),^{
+        [(ViewController*)(vc) loadHomepage:app];
+    });
 }
 - (bool) startDownload :(NSString*) dbid baseurl:(NSString*)baseurl files:(NSString*)files {
-    
     return true;
 }
 
