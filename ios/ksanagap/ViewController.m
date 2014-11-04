@@ -12,7 +12,8 @@
 #import "kfs_ios.h"
 #import "ksanagap_ios.h"
 
-@interface ViewController () <UIWebViewDelegate> {
+
+@interface ViewController () <UIMyWebViewDelegate> {
     UIWebView *webView;
     UIToolbar *toobar;
     UIBarButtonItem *menuButton;
@@ -52,8 +53,16 @@ int TOOLBARH=44;
     
     fs = [[fs_ios alloc] init];
     kfs= [[kfs_ios alloc] init];
+    
+
     ksanagap= [[ksanagap_ios alloc] init];
-    if ([diretories count] > 0) [self loadHomepage:diretories[0]];
+    [ksanagap setViewController:self];
+    
+    
+    long idx=[diretories indexOfObject:@"installer"];
+    if (idx==-1) idx=0;
+    
+    if ([diretories count] > 0) [self loadHomepage:diretories[idx]];
     
 }
 
@@ -97,7 +106,7 @@ int TOOLBARH=44;
     
     baseURL = [NSString stringWithFormat:@"file:/%@//", baseURL];
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
-
+    
     NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
     if (webView) {
         [webView removeFromSuperview];

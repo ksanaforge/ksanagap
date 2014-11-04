@@ -4,7 +4,6 @@
 @import JavaScriptCore;
 @protocol KGExport <JSExport>
 @property (readonly) NSString *platform;
-@property (readwrite) UIViewController *vc;
 
 JSExportAs(log, - (void)log:(NSString*)message);
 JSExportAs(debug, - (void)debug:(NSString*)message);
@@ -19,18 +18,21 @@ JSExportAs(startDownload, -(bool)startDownload:(NSString*) dbid baseurl:(NSStrin
 - (NSNumber*)downloadingFile ;
 - (void)cancelDownload ;
 
+- (void)setViewController :(UIViewController*)vc;
 
 @end
 
 
-@interface ksanagap_ios: NSObject <KGExport> {
-    //@property (nonatomic,assign)
-   // UIViewController *vc;
-
+@interface ksanagap_ios: NSObject <KGExport, NSURLSessionDataDelegate> {
     NSURLSession *session;
     bool downloading;
-    //UIViewController *vc;
-    
+    UIViewController *vc;
+    NSString *downloadresult;
+    int downloadedFileCount;
+    int64_t downloadedBytes;
+    NSMutableArray *downloadedFiles;
+    NSArray *downloadingFiles;
+    NSMutableArray *tasks;
 }
 
 

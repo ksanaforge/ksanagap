@@ -1,15 +1,19 @@
 //
 //  ViewController.h
-//  ksanagap
+//  accelon
 //
-//  Created by Hsiao Allen on 10/1/14.
-//  Copyright (c) 2014 Hsiao Allen. All rights reserved.
+//  Created by yapcheahshen on 2014/10/24.
+//  Copyright (c) 2014年 ksanaforge. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@protocol UIMyWebViewDelegate <UIWebViewDelegate>
+    @optional
+    - (void)loadHomepage:(NSString *)appName ;
+@end
 
 
+@interface ViewController : UIViewController <UIMyWebViewDelegate>
 @end
 
