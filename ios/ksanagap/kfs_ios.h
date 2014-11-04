@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 @import JavaScriptCore;
 @protocol KFSExport <JSExport>
 
@@ -19,10 +20,18 @@ JSExportAs(readStringArray,  - (NSString *)readStringArray:(NSNumber *)handle po
 
 JSExportAs(readDir,          - (NSString*)readDir:(NSString*)path);
 JSExportAs(mergePostings,    - (NSString*) mergePostings:(NSNumber*)handle positions:(NSArray*)positions);
+JSExportAs(deleteApp,        - (NSNumber*)deleteApp:(NSString*)appname);
+
 -(NSString*) listApps;
+
+
+- (void)setViewController :(UIViewController*)vc;
 @end  
 
-@interface kfs_ios: NSObject <KFSExport>
+@interface kfs_ios: NSObject <KFSExport> {
+    UIViewController *vc;    
+}
+
 -(void) setRoot : (NSString*)root;
 -(void) finalize ;
 @end

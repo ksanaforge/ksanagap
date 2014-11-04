@@ -2,6 +2,7 @@
 //learned from https://github.com/node-app/Nodelike/blob/master/Nodelike/NLFS.h
 //yapcheahshen@gmail.com 2014/10/10
 #import "kfs_ios.h"
+#import "ViewController.h"
 
 @implementation kfs_ios {
     NSString *rootPath;
@@ -17,15 +18,22 @@
     return self;
 }
 -(void) setRoot : (NSString*)root {
-    //set root
     rootPath = root;
 }
--(NSString *)getFullPath :(NSString*)fn {
+-(void) setViewController : (UIViewController*)_vc {
+    vc=_vc;
+}
+
+-(NSString*)getAppDirectory: (NSString*) appname {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    documentsDirectory = [NSString stringWithFormat:@"%@/%@/", documentsDirectory, rootPath];
+    documentsDirectory = [NSString stringWithFormat:@"%@/%@/", documentsDirectory, appname];
+    return documentsDirectory;
+}
+-(NSString *)getFullPath :(NSString*)fn {
     //append with root
-    NSString *file = [documentsDirectory stringByAppendingPathComponent:fn];
+    NSString *appDirectory=[self getAppDirectory:rootPath];
+    NSString *file = [appDirectory stringByAppendingPathComponent:fn];
     return file;
 }
 
@@ -512,6 +520,18 @@ uint32_t *phraseSearch (uint32_t** postings, uint32_t *postingsize, uint64_t npo
     
 }
 
+-(NSNumber*) deleteApp:(NSString*) appname {
+    if ([appname isEqualToString:@"installer"])return nil;
+    
+    NSString *appdir=[self getAppDirectory: appname];
+    
+    [[NSFileManager defaultManager] removeItemAtPath:appdir error:nil];
+    dispatch_async(dispatch_get_main_queue(),^{
+        [(ViewController*)(vc) loadApps];
+        [(ViewController*)(vc) loadHomepage:@"installer"];
+    });
+    return [NSNumber numberWithBool:true];
+}
 
 
 @end

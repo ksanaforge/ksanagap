@@ -7,9 +7,9 @@
 //
 
 #import "AppDelegate.h"
+#import "ViewController.h"
 
 @interface AppDelegate ()
-
 @end
 
 @implementation AppDelegate
@@ -17,6 +17,18 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    return YES;
+}
+
+
+- (BOOL)application:(UIApplication*)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
+    if (!url) return NO;
+    NSLog(@" downloading %@", url);
+    
+    dispatch_async(dispatch_get_main_queue(),^{
+        NSString *app=[NSString stringWithFormat:@"%@=%@",@"installer#installfrom",[url absoluteString] ];
+        [(ViewController*)self.window.rootViewController loadHomepage:app];
+    });
     return YES;
 }
 
@@ -41,5 +53,7 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+
 
 @end

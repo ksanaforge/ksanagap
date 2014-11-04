@@ -18,7 +18,7 @@
     UIToolbar *toobar;
     UIBarButtonItem *menuButton;
     NSArray *buttons;
-    NSArray *diretories;
+    NSArray *directories;
 }
 
 @property (nonatomic, readwrite, strong) JSContext *js;
@@ -49,21 +49,42 @@ int TOOLBARH=44;
     toobar.items = mutArray;
     [self.view addSubview:webView];
     [self.view addSubview:toobar];
-    diretories = [self readDir];
     
     fs = [[fs_ios alloc] init];
     kfs= [[kfs_ios alloc] init];
-    
-
     ksanagap= [[ksanagap_ios alloc] init];
     [ksanagap setViewController:self];
+    [kfs setViewController:self];
     
+    [self loadApps];
+
+    long idx=-1;
+    idx=[directories indexOfObject:@"installer"];
+    if (idx==-1 || idx>=directories.count) {
+        [self copyInstaller];
+        [self loadApps];
+        idx=[directories indexOfObject:@"installer"];
+    }
     
-    long idx=[diretories indexOfObject:@"installer"];
-    if (idx==-1) idx=0;
+    if (idx<directories.count && idx>=0) {
+        [self loadHomepage:directories[idx]];
+    }
+}
+-(void) copyInstaller {
+    NSString *files=@"index.html$build.js$build.css$nodemain.js$systemmenu.js$banner.png$package.json$ksana.js$jquery.js$react-with-addons.js";
+    NSArray *tocopy=[files componentsSeparatedByString:@"$"];
     
-    if ([diretories count] > 0) [self loadHomepage:diretories[idx]];
-    
+    for (int i=0;i<tocopy.count;i++) {
+        NSString *filePath=[[NSBundle mainBundle] pathForResource:[tocopy objectAtIndex:i] ofType:@""];
+        NSLog(@"bundle %@",filePath);
+        NSURL *source=[NSURL fileURLWithPath:filePath];
+        NSString *targetfile=[NSString stringWithFormat:@"%@%@", [ksanagap getAppDirectory:@"installer"], [tocopy objectAtIndex:i]];
+        
+        [ksanagap copyFile:source target:targetfile];
+    }
+}
+-(void) loadApps {
+    directories = [self readDir];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -89,25 +110,27 @@ int TOOLBARH=44;
     return dirs;
 }
 - (void)buttonTapped:(UIBarButtonItem *)button {
-    [self loadHomepage:diretories[button.tag]];
+    [self loadHomepage:directories[button.tag]];
 }
 
-- (void)loadHomepage:(NSString *)appName {
-    NSError* error;
+- (void)loadHomepage:(NSString *)app_hash {
+    NSString *appName;
+    NSString *hashtag;
+    
+    NSRange hash=[app_hash rangeOfString:@"#"];
+    if (hash.location==NSNotFound) {
+        appName=app_hash;
+        hashtag=@"";
+    } else {
+        appName=[app_hash substringToIndex:hash.location];
+        hashtag=[app_hash substringFromIndex:hash.location];
+    }
     
     [kfs setRoot:appName],[fs setRoot:appName];
-    
-    NSString *baseURL = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", appName]];
-    
-    NSString *htmlFile = [NSString stringWithFormat:@"%@%@", baseURL, @"/index.html"];
-    
-    baseURL = [baseURL stringByReplacingOccurrencesOfString:@"/" withString:@"//"];
-    baseURL = [baseURL stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
-    
-    baseURL = [NSString stringWithFormat:@"file:/%@//", baseURL];
+
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
-    NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
+    //NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
     if (webView) {
         [webView removeFromSuperview];
         webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, TOOLBARH)];
@@ -122,11 +145,31 @@ int TOOLBARH=44;
         js[@"ksanagap"]=ksanagap;
     }
     
-    [webView loadHTMLString:html baseURL:[NSURL URLWithString:baseURL]];
+    NSString *baseURL = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", appName]];
+    
+    NSString *indexhtml = [NSString stringWithFormat:@"%@%@", baseURL, @"/index.html" ];
+    NSURL *indexhtmlurl= [NSURL fileURLWithPath:indexhtml];
+    NSURL *indexhtmlurl_hash;
+    if (hashtag.length) {
+         indexhtmlurl_hash = [NSURL URLWithString:hashtag relativeToURL:indexhtmlurl];
+    } else{
+        indexhtmlurl_hash=indexhtmlurl;
+    }
+
+    NSURLRequest *htmlrequest = [NSURLRequest requestWithURL:indexhtmlurl_hash];
+    
+    [webView loadRequest:htmlrequest];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 }
 
+- (BOOL) webView:(UIWebView*)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)navigationType{
 
+    if ([inRequest.URL.scheme isEqualToString:@"http"]){
+        [[UIApplication sharedApplication] openURL:[inRequest URL]];
+        return NO;
+    }
+    return YES;
+}
 @end

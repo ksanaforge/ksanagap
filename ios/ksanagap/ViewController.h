@@ -11,6 +11,7 @@
 @protocol UIMyWebViewDelegate <UIWebViewDelegate>
     @optional
     - (void)loadHomepage:(NSString *)appName ;
+    - (void)loadApps ;
 @end
 
 

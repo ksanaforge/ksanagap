@@ -18,13 +18,12 @@ JSExportAs(startDownload, -(bool)startDownload:(NSString*) dbid baseurl:(NSStrin
 - (NSNumber*)downloadingFile ;
 - (void)cancelDownload ;
 
-- (void)setViewController :(UIViewController*)vc;
 
 @end
 
 
 @interface ksanagap_ios: NSObject <KGExport, NSURLSessionDataDelegate> {
-
+    
     NSURLSession *session;
     bool downloading;
     UIViewController *vc;
@@ -34,7 +33,12 @@ JSExportAs(startDownload, -(bool)startDownload:(NSString*) dbid baseurl:(NSStrin
     NSMutableArray *downloadedFiles;
     NSArray *downloadingFiles;
     NSMutableArray *tasks;
+    
 }
--(void) setRoot : (NSString*)root;
+- (void)setViewController :(UIViewController*)vc;
+-(boolean_t) moveFile :(NSURL*)source target:(NSString*)targetFile;
+-(boolean_t) copyFile :(NSURL*)source target:(NSString*)targetFile;
+-(NSString *)getFullPath :(NSString*)fn;
+-(NSString*)getAppDirectory: (NSString*) appname;
 
 @end

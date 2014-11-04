@@ -14,15 +14,18 @@
     NSString *rootPath;
 }
 
--(NSString *)getFullPath :(NSString*)fn {
+-(NSString*)getAppDirectory: (NSString*) appname {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    documentsDirectory = [NSString stringWithFormat:@"%@/%@/", documentsDirectory, rootPath];
+    documentsDirectory = [NSString stringWithFormat:@"%@/%@/", documentsDirectory, appname];
+    return documentsDirectory;
+}
+-(NSString *)getFullPath :(NSString*)fn {
     //append with root
-    NSString *file = [documentsDirectory stringByAppendingPathComponent:fn];
+    NSString *appDirectory=[self getAppDirectory:rootPath];
+    NSString *file = [appDirectory stringByAppendingPathComponent:fn];
     return file;
 }
-
 - (id)init {
     self = [super init];
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -56,15 +59,64 @@
 - (void) switchApp :(NSString*) app {
     NSLog(@"switching to %@",app);
     dispatch_async(dispatch_get_main_queue(),^{
+        [(ViewController*)(vc) loadApps];
         [(ViewController*)(vc) loadHomepage:app];
     });
 }
-
--(boolean_t) replaceFile :(NSURL*)location replacing:(uint64_t)replacing{
+-(boolean_t) copyFile:(NSURL*)source target:(NSString*)targetFile {
     NSError *error = nil;
     NSFileManager *fm=[NSFileManager defaultManager];
-    boolean_t copied=false;
     
+    boolean_t copied=false;
+    NSURL *targetURL=[NSURL fileURLWithPath:targetFile];
+   
+    NSString *folder=[[targetURL path] stringByDeletingLastPathComponent];
+    if (![fm fileExistsAtPath:folder]) {
+       if (![fm createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error]) {
+           NSLog(@"%@",[error localizedDescription]);
+           return 0;
+       }
+    }
+    if ([fm copyItemAtURL:source toURL:targetURL error:&error]) {
+        copied=true;
+    } else {
+        NSLog(@"%@",[error localizedDescription]);
+    }
+    return copied;
+}
+
+
+-(boolean_t) moveFile :(NSURL*)source target:(NSString*)targetFile {
+    NSError *error = nil;
+    NSFileManager *fm=[NSFileManager defaultManager];
+    
+    boolean_t moved=false;
+    NSURL *targetURL=[NSURL fileURLWithPath:targetFile];
+
+    if ([fm fileExistsAtPath:targetFile]) {
+        if ([fm replaceItemAtURL:targetURL withItemAtURL:source backupItemName:nil options:NSFileManagerItemReplacementUsingNewMetadataOnly resultingItemURL:nil error:&error]) {
+            moved=true;
+        } else {
+            NSLog(@"%@",[error localizedDescription]);
+        }
+    } else {
+        NSString *folder=[[targetURL path] stringByDeletingLastPathComponent];
+        if (![fm fileExistsAtPath:folder]) {
+            if (![fm createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error]) {
+                NSLog(@"%@",[error localizedDescription]);
+                return 0;
+            }
+        }
+        if ([fm moveItemAtURL:source toURL:targetURL error:&error]) {
+            moved=true;
+        } else {
+            NSLog(@"%@",[error localizedDescription]);
+        }
+    }
+    return moved;
+}
+-(boolean_t) replaceWith :(NSURL*)location replacing:(uint64_t)replacing{
+    boolean_t moved=false;
     NSString *replaceTo =[downloadingFiles objectAtIndex:replacing];
     if ([replaceTo isEqualToString:@"ksana.js"]) {
         replaceTo=@"ksana.js!";
@@ -72,29 +124,16 @@
    
     NSString *targetFile = [self getFullPath:replaceTo ];
     NSLog(@"copy %@ to %@",[location path], targetFile );
-    NSURL *targetURL=[NSURL fileURLWithPath:targetFile];
+    moved=[self moveFile :location target:targetFile];
     
-    if ([fm fileExistsAtPath:targetFile]) {
-        if ([fm replaceItemAtURL:targetURL withItemAtURL:location backupItemName:nil options:NSFileManagerItemReplacementUsingNewMetadataOnly resultingItemURL:nil error:&error]) {
-            copied=true;
-        } else {
-            NSLog(@"%@",[error localizedDescription]);
-        }
-    } else {
-        if ([fm moveItemAtURL:location toURL:targetURL error:&error]) {
-            copied=true;
-        } else {
-            NSLog(@"%@",[error localizedDescription]);
-        }
-    }
-    return copied;
+    return moved;
 }
 
 -(void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location{
     uint64_t idx=[tasks indexOfObject:downloadTask];
     if (idx==-1) return;
     
-    if ([self replaceFile :location replacing:idx]) {
+    if ([self replaceWith :location replacing:idx]) {
         downloadedFileCount++;
     }
 }

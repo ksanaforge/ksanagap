@@ -8,6 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		0138B3341A0880E900E7A7DA /* ksanagap_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0138B3331A0880E900E7A7DA /* ksanagap_ios.m */; };
+		0138B3411A08DA2500E7A7DA /* banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 0138B3371A08DA2500E7A7DA /* banner.png */; };
+		0138B3421A08DA2500E7A7DA /* build.css in Resources */ = {isa = PBXBuildFile; fileRef = 0138B3381A08DA2500E7A7DA /* build.css */; };
+		0138B3431A08DA2500E7A7DA /* build.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B3391A08DA2500E7A7DA /* build.js */; };
+		0138B3441A08DA2500E7A7DA /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33A1A08DA2500E7A7DA /* index.html */; };
+		0138B3451A08DA2500E7A7DA /* jquery.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33B1A08DA2500E7A7DA /* jquery.js */; };
+		0138B3461A08DA2500E7A7DA /* ksana.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33C1A08DA2500E7A7DA /* ksana.js */; };
+		0138B3471A08DA2500E7A7DA /* nodemain.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33D1A08DA2500E7A7DA /* nodemain.js */; };
+		0138B3481A08DA2500E7A7DA /* package.json in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33E1A08DA2500E7A7DA /* package.json */; };
+		0138B3491A08DA2500E7A7DA /* react-with-addons.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33F1A08DA2500E7A7DA /* react-with-addons.js */; };
+		0138B34A1A08DA2500E7A7DA /* systemmenu.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B3401A08DA2500E7A7DA /* systemmenu.js */; };
 		0183DF9819FAA8DD008E1249 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DF9719FAA8DD008E1249 /* main.m */; };
 		0183DF9B19FAA8DD008E1249 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DF9A19FAA8DD008E1249 /* AppDelegate.m */; };
 		0183DF9E19FAA8DD008E1249 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DF9D19FAA8DD008E1249 /* ViewController.m */; };
@@ -32,6 +42,16 @@
 /* Begin PBXFileReference section */
 		0138B3321A0880E900E7A7DA /* ksanagap_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ksanagap_ios.h; path = ../../../ios/ksanagap/ksanagap_ios.h; sourceTree = "<group>"; };
 		0138B3331A0880E900E7A7DA /* ksanagap_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ksanagap_ios.m; path = ../../../ios/ksanagap/ksanagap_ios.m; sourceTree = "<group>"; };
+		0138B3371A08DA2500E7A7DA /* banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = banner.png; path = ../../../installer/banner.png; sourceTree = "<group>"; };
+		0138B3381A08DA2500E7A7DA /* build.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = build.css; path = ../../../installer/build.css; sourceTree = "<group>"; };
+		0138B3391A08DA2500E7A7DA /* build.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = build.js; path = ../../../installer/build.js; sourceTree = "<group>"; };
+		0138B33A1A08DA2500E7A7DA /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = ../../../installer/index.html; sourceTree = "<group>"; };
+		0138B33B1A08DA2500E7A7DA /* jquery.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = jquery.js; path = ../../../installer/jquery.js; sourceTree = "<group>"; };
+		0138B33C1A08DA2500E7A7DA /* ksana.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = ksana.js; path = ../../../installer/ksana.js; sourceTree = "<group>"; };
+		0138B33D1A08DA2500E7A7DA /* nodemain.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = nodemain.js; path = ../../../installer/nodemain.js; sourceTree = "<group>"; };
+		0138B33E1A08DA2500E7A7DA /* package.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = package.json; path = ../../../installer/package.json; sourceTree = "<group>"; };
+		0138B33F1A08DA2500E7A7DA /* react-with-addons.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "react-with-addons.js"; path = "../../../installer/react-with-addons.js"; sourceTree = "<group>"; };
+		0138B3401A08DA2500E7A7DA /* systemmenu.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = systemmenu.js; path = ../../../installer/systemmenu.js; sourceTree = "<group>"; };
 		0183DF9219FAA8DD008E1249 /* accelon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = accelon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0183DF9619FAA8DD008E1249 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0183DF9719FAA8DD008E1249 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -69,9 +89,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0138B34B1A08DA2E00E7A7DA /* installer */ = {
+			isa = PBXGroup;
+			children = (
+				0138B3371A08DA2500E7A7DA /* banner.png */,
+				0138B3381A08DA2500E7A7DA /* build.css */,
+				0138B3391A08DA2500E7A7DA /* build.js */,
+				0138B33A1A08DA2500E7A7DA /* index.html */,
+				0138B33B1A08DA2500E7A7DA /* jquery.js */,
+				0138B33C1A08DA2500E7A7DA /* ksana.js */,
+				0138B33D1A08DA2500E7A7DA /* nodemain.js */,
+				0138B33E1A08DA2500E7A7DA /* package.json */,
+				0138B33F1A08DA2500E7A7DA /* react-with-addons.js */,
+				0138B3401A08DA2500E7A7DA /* systemmenu.js */,
+			);
+			name = installer;
+			sourceTree = "<group>";
+		};
 		0183DF8919FAA8DD008E1249 = {
 			isa = PBXGroup;
 			children = (
+				0138B34B1A08DA2E00E7A7DA /* installer */,
 				0183DF9419FAA8DD008E1249 /* accelon */,
 				0183DFAE19FAA8DD008E1249 /* accelonTests */,
 				0183DF9319FAA8DD008E1249 /* Products */,
@@ -214,9 +252,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0138B3441A08DA2500E7A7DA /* index.html in Resources */,
 				0183DFA119FAA8DD008E1249 /* Main.storyboard in Resources */,
+				0138B3431A08DA2500E7A7DA /* build.js in Resources */,
+				0138B3481A08DA2500E7A7DA /* package.json in Resources */,
 				0183DFA619FAA8DD008E1249 /* LaunchScreen.xib in Resources */,
+				0138B3491A08DA2500E7A7DA /* react-with-addons.js in Resources */,
+				0138B3451A08DA2500E7A7DA /* jquery.js in Resources */,
 				0183DFA319FAA8DD008E1249 /* Images.xcassets in Resources */,
+				0138B3421A08DA2500E7A7DA /* build.css in Resources */,
+				0138B3471A08DA2500E7A7DA /* nodemain.js in Resources */,
+				0138B3461A08DA2500E7A7DA /* ksana.js in Resources */,
+				0138B3411A08DA2500E7A7DA /* banner.png in Resources */,
+				0138B34A1A08DA2500E7A7DA /* systemmenu.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
