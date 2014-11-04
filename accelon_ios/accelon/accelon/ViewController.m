@@ -15,8 +15,11 @@
 
 @interface ViewController () <UIMyWebViewDelegate> {
     UIWebView *webView;
-    UIToolbar *toobar;
-    UIBarButtonItem *menuButton;
+    //UIToolbar *toobar;
+    UINavigationBar *navBar;
+    UINavigationItem *navTitle;
+    UIBarButtonItem *homeButton;
+    UIBarButtonItem *websiteButton;
     NSArray *buttons;
     NSArray *directories;
 }
@@ -34,21 +37,27 @@ int TOOLBARH=44;
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, TOOLBARH)];
+    webView = [[UIWebView alloc] initWithFrame:CGRectMake(0,TOOLBARH,self.view.frame.size.width,self.view.frame.size.height)];    // CGRectOffset(self.view.frame, 0, 0)];
     webView.delegate = self;
     
-    toobar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, TOOLBARH)];
+    navBar=[[UINavigationBar alloc] initWithFrame:CGRectMake(0,0,self.view.frame.size.width,TOOLBARH)];
+    navTitle=[[UINavigationItem alloc] initWithTitle:@"Accelon"];
     
-    buttons = [self readDir];
-    NSMutableArray *mutArray = [[NSMutableArray alloc] init];
-    for (int i = 0; i < [buttons count]; i++) {
-        UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithTitle:buttons[i] style:UIBarButtonItemStylePlain target:self action:@selector(buttonTapped:)];
-        button.tag = i;
-        mutArray[i] = button;
-    }
-    toobar.items = mutArray;
+
+   // toobar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 20, self.view.bounds.size.width, TOOLBARH)];
+
+  //  NSMutableArray *mutArray = [[NSMutableArray alloc] init];
+  //
+    homeButton = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStylePlain target:self action:@selector(homeTapped:)];
+    websiteButton = [[UIBarButtonItem alloc] initWithTitle:@"Get Database" style:UIBarButtonItemStylePlain target:self action:@selector(websiteTapped:)];
+
+    navTitle.rightBarButtonItem=websiteButton;
+    navTitle.leftBarButtonItem=homeButton;
+    [navBar pushNavigationItem:navTitle animated:NO];
+    
+
+    [self.view addSubview:navBar];
     [self.view addSubview:webView];
-    [self.view addSubview:toobar];
     
     fs = [[fs_ios alloc] init];
     kfs= [[kfs_ios alloc] init];
@@ -109,10 +118,19 @@ int TOOLBARH=44;
     
     return dirs;
 }
-- (void)buttonTapped:(UIBarButtonItem *)button {
-    [self loadHomepage:directories[button.tag]];
+- (void)homeTapped:(UIBarButtonItem *)button {
+    [self loadHomepage:@"installer"];
+}
+- (void)websiteTapped:(UIBarButtonItem *)button {
+    NSDictionary *data=[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"]];
+    NSString *accelonwebsite=[data objectForKey:@"website"];
+    if (!accelonwebsite) accelonwebsite=@"http://accelon.github.io";
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:accelonwebsite]];
 }
 
+- (void) setNavTitle:(NSString*)appname{
+    navTitle.title=appname;
+}
 - (void)loadHomepage:(NSString *)app_hash {
     NSString *appName;
     NSString *hashtag;
@@ -127,6 +145,7 @@ int TOOLBARH=44;
     }
     
     [kfs setRoot:appName],[fs setRoot:appName];
+    [self setNavTitle:appName];
 
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
