@@ -10,7 +10,18 @@
 
 #import "ViewController.h"
 
-@implementation ksanagap_ios
+@implementation ksanagap_ios{
+    NSString *rootPath;
+}
+
+-(NSString *)getFullPath :(NSString*)fn {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    documentsDirectory = [NSString stringWithFormat:@"%@/%@/", documentsDirectory, rootPath];
+    //append with root
+    NSString *file = [documentsDirectory stringByAppendingPathComponent:fn];
+    return file;
+}
 
 - (id)init {
     self = [super init];
@@ -49,15 +60,43 @@
     });
 }
 
--(void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location{
-    NSURLRequest* req=downloadTask.currentRequest;
-    NSLog(@"location %@ %@",[location absoluteString], [[req URL] absoluteString]);
+-(boolean_t) replaceFile :(NSURL*)location replacing:(uint64_t)replacing{
+    NSError *error = nil;
+    NSFileManager *fm=[NSFileManager defaultManager];
+    boolean_t copied=false;
+    
+    NSString *replaceTo =[downloadingFiles objectAtIndex:replacing];
+    if ([replaceTo isEqualToString:@"ksana.js"]) {
+        replaceTo=@"ksana.js!";
+    }
+   
+    NSString *targetFile = [self getFullPath:replaceTo ];
+    NSLog(@"copy %@ to %@",[location path], targetFile );
+    NSURL *targetURL=[NSURL fileURLWithPath:targetFile];
+    
+    if ([fm fileExistsAtPath:targetFile]) {
+        if ([fm replaceItemAtURL:targetURL withItemAtURL:location backupItemName:nil options:NSFileManagerItemReplacementUsingNewMetadataOnly resultingItemURL:nil error:&error]) {
+            copied=true;
+        } else {
+            NSLog(@"%@",[error localizedDescription]);
+        }
+    } else {
+        if ([fm moveItemAtURL:location toURL:targetURL error:&error]) {
+            copied=true;
+        } else {
+            NSLog(@"%@",[error localizedDescription]);
+        }
+    }
+    return copied;
+}
 
+-(void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location{
     uint64_t idx=[tasks indexOfObject:downloadTask];
     if (idx==-1) return;
     
-    [downloadedFiles replaceObjectAtIndex:idx withObject:location];
-    downloadedFileCount++;
+    if ([self replaceFile :location replacing:idx]) {
+        downloadedFileCount++;
+    }
 }
 
 -(void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite{
@@ -79,13 +118,17 @@
     }
 }
 - (bool) startDownload :(NSString*) dbid baseurl:(NSString*)baseurl files:(NSString*)files {
+    if (downloading) return false;
+    
+    downloading=true;
     downloadingFiles =[files componentsSeparatedByString:@"\uffff"];
-    downloadedFiles=[NSMutableArray arrayWithArray:downloadingFiles];
     tasks=[[NSMutableArray alloc] init];
     
+    rootPath=[NSString stringWithString:dbid];
     downloadedFileCount=0;
     downloadedBytes=0;
-    [self clearTemporaryDirectory];
+    // [self clearTemporaryDirectory];  //system will clear Tmp folder
+    
     for (int i=0;i<[downloadingFiles count];i++) {
         NSString *url=[baseurl stringByAppendingString:[downloadingFiles objectAtIndex:i]];
         NSURL *nsurl=[[NSURL alloc] initWithString:url];
@@ -95,18 +138,31 @@
 }
 
 -(void)cancelDownload  {
+    for (int i=0;i<tasks.count;i++) {
+        NSURLSessionDownloadTask *task=[tasks objectAtIndex:i];
+        downloading=false;
+        [task cancel];
+    }
     
 };
 
--(void) replaceFiles {
+-(void)copyKsanajs {
     NSError *error;
-    
-}
+    NSFileManager *fm=[NSFileManager defaultManager];
 
+    NSString *targetFile = [self getFullPath:@"ksana.js" ];
+    NSURL *targetURL=[NSURL fileURLWithPath:targetFile];
+
+    NSString *sourceFile = [self getFullPath:@"ksana.js!" ];
+    NSURL *sourceURL=[NSURL fileURLWithPath:sourceFile];
+    
+    [fm replaceItemAtURL:targetURL withItemAtURL:sourceURL backupItemName:nil options:NSFileManagerItemReplacementUsingNewMetadataOnly resultingItemURL:nil error:&error];
+}
 -(NSString*)doneDownload  {
-    if (downloadedFileCount==[downloadingFiles count]) {
-      [self replaceFiles];
-      return @"success";
+    if (downloadedFileCount==downloadingFiles.count) {
+        [self copyKsanajs];
+        downloading=false;
+        return @"success";
     }
     else return downloadresult;
 };
