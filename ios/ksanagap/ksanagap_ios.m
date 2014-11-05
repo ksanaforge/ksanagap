@@ -156,11 +156,19 @@
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@",NSTemporaryDirectory(),file] error:&error];
     }
 }
+- (NSString*) getDownloadUrl : (NSString*) baseurl  filename:(NSString*)filename) {
+    NSRange range = [path rangeOfString:@"/" options:NSBackwardsSearch];
+    if (range.location!=NSNotFound) return filename;
+    else return [baseurl stringByAppendingString:filename];
+}
+
+
 - (bool) startDownload :(NSString*) dbid baseurl:(NSString*)baseurl files:(NSString*)files {
     if (downloading) return false;
     
     downloading=true;
-    downloadingFiles =[files componentsSeparatedByString:@"\uffff"];
+    NSArray files_ =[files componentsSeparatedByString:@"\uffff"];
+    downloadingFiles = [files_ mutableCopy ];
     tasks=[[NSMutableArray alloc] init];
     
     rootPath=[NSString stringWithString:dbid];
@@ -169,7 +177,14 @@
     // [self clearTemporaryDirectory];  //system will clear Tmp folder
     
     for (int i=0;i<[downloadingFiles count];i++) {
-        NSString *url=[baseurl stringByAppendingString:[downloadingFiles objectAtIndex:i]];
+        NSString *filename=[downloadingFiles objectAtIndex:i];
+        NSString *defaulturl=[baseurl stringByAppendingString:filename];
+        NSString *url=[getDownloadUrl:baseurl filename:filename];
+        if (![defaulturl isEqualToString:url]) {
+            //runtime_version 1.3 support filename with host
+            NSString *hostremoved=[filename substringFromIndex: [url length] - [filename length] ];
+            [downloadingfiles replaceObjectAtIndex:i withObject:hostremoved];
+        }
         NSURL *nsurl=[[NSURL alloc] initWithString:url];
         [self addDownload :nsurl];
     }
@@ -182,7 +197,6 @@
         downloading=false;
         [task cancel];
     }
-    
 };
 
 -(void)copyKsanajs {
@@ -212,5 +226,7 @@
     return [NSNumber numberWithInt:0];
 }
 
-
+-(NSString*)runtime_version  {
+    return @"1.3";
+}
 @end

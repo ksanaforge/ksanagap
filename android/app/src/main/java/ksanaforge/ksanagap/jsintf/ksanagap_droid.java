@@ -94,7 +94,13 @@ public class ksanagap_droid {
             filestodelete[i].delete();
         }
     }
-@JavascriptInterface
+    public String getDownloadUrl(String baseurl,String filename) {
+        int slash = filename.indexOf("/");
+        if (slash > 0) return filename;
+        else return baseurl + filename;
+    }
+
+    @JavascriptInterface
     public boolean startDownload(String _dbid, String baseurl, String _files) {
     if (downloading) return false;
     dbid=_dbid;
@@ -104,10 +110,18 @@ public class ksanagap_droid {
     downloadManager = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
     deleteTempfiles();
     for (int i=0;i<downloadingfiles.length;i++) {
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(baseurl+downloadingfiles[i]));
+        //1.3 support host in downloadingfiles
+
+        String url=getDownloadUrl(baseurl,downloadingfiles[i]);
+        if (url!=baseurl+downloadingfiles[i]) { //filenames has host
+            downloadingfiles[i]=downloadingfiles[i].substring( url.length() - downloadingfiles[i].length());
+        }
+
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+
         request.setTitle(dbid+":"+downloadingfiles[i]);
         //Set a description of this download, to be displayed in notifications (if enabled)
-        request.setDescription(baseurl+downloadingfiles[i]);
+        request.setDescription(url);
 
         //request.setDestinationInExternalPublicDir("/accelon/"+dbid,files[i]);
         request.setDestinationInExternalPublicDir("/"+activity.getString(R.string.app_rootpath)+"/.tmp",downloadingfiles[i]);
@@ -166,6 +180,7 @@ public class ksanagap_droid {
         if (downloads.size()==0) return downloadresult;
         else return "";
     }
+
     public void finish() {
         downloadresult = "success";
         //create directory if not exists
@@ -211,4 +226,13 @@ public class ksanagap_droid {
             else return "";
         }else return "";
     }
+
+    @JavascriptInterface
+    public String runtime_version() {
+        return "1.3";
+    }
+    /*
+       1.2 liveupdate on iOS and Android
+        1.3  ksana.js files support different host, if not specified use baseurl
+     */
 }

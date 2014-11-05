@@ -17,7 +17,7 @@ JSExportAs(startDownload, -(bool)startDownload:(NSString*) dbid baseurl:(NSStrin
 - (NSNumber*)downloadedByte ;
 - (NSNumber*)downloadingFile ;
 - (void)cancelDownload ;
-
+-(NSString*)runtime_version;
 
 @end
 
@@ -31,7 +31,7 @@ JSExportAs(startDownload, -(bool)startDownload:(NSString*) dbid baseurl:(NSStrin
     int downloadedFileCount;
     int64_t downloadedBytes;
     NSMutableArray *downloadedFiles;
-    NSArray *downloadingFiles;
+    NSMutableArray *downloadingFiles;
     NSMutableArray *tasks;
     
 }
