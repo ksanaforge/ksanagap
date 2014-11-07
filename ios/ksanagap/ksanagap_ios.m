@@ -156,8 +156,10 @@
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@",NSTemporaryDirectory(),file] error:&error];
     }
 }
-- (NSString*) getDownloadUrl : (NSString*) baseurl  filename:(NSString*)filename) {
-    NSRange range = [path rangeOfString:@"/" options:NSBackwardsSearch];
+
+
+- (NSString*) getDownloadUrl : (NSString*)baseurl  filename:(NSString*)filename {
+    NSRange range = [filename rangeOfString:@"/" options:NSBackwardsSearch];
     if (range.location!=NSNotFound) return filename;
     else return [baseurl stringByAppendingString:filename];
 }
@@ -167,7 +169,7 @@
     if (downloading) return false;
     
     downloading=true;
-    NSArray files_ =[files componentsSeparatedByString:@"\uffff"];
+    NSArray *files_ =[files componentsSeparatedByString:@"\uffff"];
     downloadingFiles = [files_ mutableCopy ];
     tasks=[[NSMutableArray alloc] init];
     
@@ -179,11 +181,11 @@
     for (int i=0;i<[downloadingFiles count];i++) {
         NSString *filename=[downloadingFiles objectAtIndex:i];
         NSString *defaulturl=[baseurl stringByAppendingString:filename];
-        NSString *url=[getDownloadUrl:baseurl filename:filename];
+        NSString *url=[self getDownloadUrl:baseurl filename:filename];
         if (![defaulturl isEqualToString:url]) {
             //runtime_version 1.3 support filename with host
             NSString *hostremoved=[filename substringFromIndex: [url length] - [filename length] ];
-            [downloadingfiles replaceObjectAtIndex:i withObject:hostremoved];
+            [downloadingFiles replaceObjectAtIndex:i withObject:hostremoved];
         }
         NSURL *nsurl=[[NSURL alloc] initWithString:url];
         [self addDownload :nsurl];
