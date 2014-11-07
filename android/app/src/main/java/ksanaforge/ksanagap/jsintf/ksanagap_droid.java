@@ -102,35 +102,44 @@ public class ksanagap_droid {
     @JavascriptInterface
     public boolean startDownload(String _dbid, String baseurl, String _files) {
     if (downloading) return false;
+    if (baseurl.charAt(baseurl.length()-1)!='/') baseurl=baseurl+'/';
     dbid=_dbid;
-    downloadingfiles=_files.split("\uffff");
+    String [] downloadings=_files.split("\uffff");
+    ArrayList<String> ardownloadingFiles=new ArrayList<String>();
+
     downloads_saved.clear();
     downloads.clear();
     downloadManager = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
     deleteTempfiles();
-    for (int i=0;i<downloadingfiles. length;i++) {
+    for (int i=0;i<downloadings.length;i++) {
         //1.3 support host in downloadingfiles
 
-        String url=getDownloadUrl(baseurl,downloadingfiles[i]);
-        if (!url.equals(baseurl+downloadingfiles[i])) { //filenames has host
-
-            downloadingfiles[i]=downloadingfiles[i].substring( url.length() - downloadingfiles[i].length());
+        String url=getDownloadUrl(baseurl,downloadings[i]);
+        if (!url.equals(baseurl+downloadings[i])) { //filenames has host
+            int start= url.length() - downloadings[i].length();
+            String s=downloadings[i];
+            String fnonly=s.substring(start, downloadings[i].length());
+            ardownloadingFiles.add(fnonly);
+        } else {
+            ardownloadingFiles.add(downloadings[i]);
         }
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
 
-        request.setTitle(dbid+":"+downloadingfiles[i]);
+        request.setTitle(dbid+":"+downloadings[i]);
         //Set a description of this download, to be displayed in notifications (if enabled)
         request.setDescription(url);
 
         //request.setDestinationInExternalPublicDir("/accelon/"+dbid,files[i]);
-        request.setDestinationInExternalPublicDir("/"+activity.getString(R.string.app_rootpath)+"/.tmp",downloadingfiles[i]);
+        request.setDestinationInExternalPublicDir("/"+activity.getString(R.string.app_rootpath)+"/.tmp",downloadings[i]);
 
     //Environment.DIRECTORY_DOWNLOADS
         long id=downloadManager.enqueue(request);
         downloads.add(id);
         downloads_saved.add(id);
+
     }
+    downloadingfiles=ardownloadingFiles.toArray(new String[ardownloadingFiles.size()]);
     return true;
 }
 
