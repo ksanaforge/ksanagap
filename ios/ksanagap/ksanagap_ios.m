@@ -159,8 +159,7 @@
 
 
 - (NSString*) getDownloadUrl : (NSString*)baseurl  filename:(NSString*)filename {
-    NSRange range = [filename rangeOfString:@"/" options:NSBackwardsSearch];
-    if (range.location!=NSNotFound) return filename;
+    if ([filename hasPrefix:@"http://"]) return filename;
     else return [baseurl stringByAppendingString:filename];
 }
 

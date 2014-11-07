@@ -95,7 +95,7 @@ public class ksanagap_droid {
         }
     }
     public String getDownloadUrl(String baseurl,String filename) {
-        int slash = filename.indexOf("/");
+        int slash = filename.startsWith("http://");
         if (slash > 0) return filename;
         else return baseurl + filename;
     }
