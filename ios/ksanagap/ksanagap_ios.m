@@ -163,7 +163,10 @@
     else return [baseurl stringByAppendingString:filename];
 }
 
-
+- (NSString*) removeHost: (NSString*) url {
+    NSRange range=[url rangeOfString:@"/" options:NSBackwardsSearch];
+    return [url substringFromIndex:range.location+1];
+}
 - (bool) startDownload :(NSString*) dbid baseurl:(NSString*)baseurl files:(NSString*)files {
     if (downloading) return false;
     
@@ -183,7 +186,7 @@
         NSString *url=[self getDownloadUrl:baseurl filename:filename];
         if (![defaulturl isEqualToString:url]) {
             //runtime_version 1.3 support filename with host
-            NSString *hostremoved=[filename substringFromIndex: [url length] - [filename length] ];
+            NSString *hostremoved=[self removeHost :filename];
             [downloadingFiles replaceObjectAtIndex:i withObject:hostremoved];
         }
         NSURL *nsurl=[[NSURL alloc] initWithString:url];
