@@ -95,8 +95,7 @@ public class ksanagap_droid {
         }
     }
     public String getDownloadUrl(String baseurl,String filename) {
-        int slash = filename.startsWith("http://");
-        if (slash > 0) return filename;
+        if (filename.startsWith("http://")) return filename;
         else return baseurl + filename;
     }
 
@@ -109,11 +108,12 @@ public class ksanagap_droid {
     downloads.clear();
     downloadManager = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
     deleteTempfiles();
-    for (int i=0;i<downloadingfiles.length;i++) {
+    for (int i=0;i<downloadingfiles. length;i++) {
         //1.3 support host in downloadingfiles
 
         String url=getDownloadUrl(baseurl,downloadingfiles[i]);
-        if (url!=baseurl+downloadingfiles[i]) { //filenames has host
+        if (!url.equals(baseurl+downloadingfiles[i])) { //filenames has host
+
             downloadingfiles[i]=downloadingfiles[i].substring( url.length() - downloadingfiles[i].length());
         }
 
