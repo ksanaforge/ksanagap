@@ -113,8 +113,7 @@ public class ksanagap_droid {
 
         String url=getDownloadUrl(baseurl,downloadingfiles[i]);
         if (!url.equals(baseurl+downloadingfiles[i])) { //filenames has host
-
-            downloadingfiles[i]=downloadingfiles[i].substring( url.length() - downloadingfiles[i].length());
+            downloadingfiles[i]=downloadingfiles[i].substring(downloadingfiles[i].lastIndexOf('/')+1);
         }
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));

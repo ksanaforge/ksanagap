@@ -235,7 +235,7 @@ var boot=function(appId,main,maindiv) {
 	main=main||"main";
 	maindiv=maindiv||"main";
 	ksana.appId=appId;
-	ksana.mainComponent=React.renderComponent(Require(main)(),document.getElementById(maindiv));
+	ksana.mainComponent=React.render(Require(main)(),document.getElementById(maindiv));
 }
 window.ksana=ksana;
 window.Require=Require;
@@ -258,6 +258,15 @@ if (typeof process!="undefined") {
 var deleteApp=function(app) {
 	console.error("not allow on PC, do it in File Explorer/ Finder");
 }
+var username=function() {
+	return "";
+}
+var useremail=function() {
+	return ""
+}
+var runtime_version=function() {
+	return "1.2";
+}
 var ksanagap={
 	platform:"node-webkit",
 	startDownload:downloader.startDownload,
@@ -267,7 +276,10 @@ var ksanagap={
 	doneDownload:downloader.doneDownload,
 	switchApp:switchApp,
 	rootPath:rootPath,
-	deleteApp: deleteApp
+	deleteApp: deleteApp,
+	username:username, //not support on PC
+	useremail:username,
+	runtime_version:runtime_version
 }
 
 
@@ -297,6 +309,7 @@ var startDownload=function(dbid,_baseurl,_files) { //return download id
 	nextFile();
 	downloading=true;
 	baseurl=_baseurl;
+	if (baseurl[baseurl.length-1]!='/')baseurl+='/';
 	targetPath=ksanagap.rootPath+dbid+'/';
 	tempPath=ksanagap.rootPath+".tmp/";
 	result="";
@@ -324,8 +337,7 @@ var downloadFile=function(nfile) {
 	var request = http.get(url, function(response) {
 		response.on('data',function(chunk){
 			writeStream.write(chunk);
-			datalength+=chunk.length;
-			totalDownloadByte+=datalength;
+			totalDownloadByte+=chunk.length;
 			if (userCancel) {
 				writeStream.end();
 				setTimeout(function(){nextFile();},100);
@@ -548,6 +560,12 @@ var jsonp=function(url,dbid,callback,context) {
   script.setAttribute('src', url+'?"'+(new Date().getTime()));
   document.getElementsByTagName('head')[0].appendChild(script); 
 }
+var runtime_version_ok=function(minruntime) {
+  if (!minruntime) return true;//not mentioned.
+  var min=parseFloat(minruntime);
+  var runtime=parseFloat( ksanagap.runtime_version()||"1.0");
+  if (min>runtime) return false;
+}
 
 var needToUpdate=function(fromjson,tojson) {
   var needUpdates=[];
@@ -555,14 +573,25 @@ var needToUpdate=function(fromjson,tojson) {
     var to=tojson[i];
     var from=fromjson[i];
     var newfiles=[],newfilesizes=[],removed=[];
+    
     if (!to) continue; //cannot reach host
+    if (!runtime_version_ok(to.minruntime)) {
+      console.warn("runtime too old, need "+to.minruntime);
+      continue; 
+    }
+    if (!from.filedates) {
+      console.warn("missing filedates in ksana.js of "+from.dbid);
+      continue;
+    }
     from.filedates.map(function(f,idx){
       var newidx=to.files.indexOf( from.files[idx]);
       if (newidx==-1) {
         //file removed in new version
         removed.push(from.files[idx]);
       } else {
-        if (f<to.filedates[newidx]) {
+        var fromdate=Date.parse(f);
+        var todate=Date.parse(to.filedates[newidx]);
+        if (fromdate<todate) {
           newfiles.push( to.files[newidx] );
           newfilesizes.push(to.filesizes[newidx]);
         }        
@@ -3534,7 +3563,6 @@ require.register("installer-main/index.js", function(exports, require, module){
       check no network or no update available 
       switch to the app directly
 */
-
 Require("bootstrap");
 //var othercomponent=Require("other"); 
 /*
@@ -3549,10 +3577,10 @@ Require("bootstrap");
    downloaded,
    invited by friend (accelon://)
 */ 
-var banner=Require("banner");
-var installed=Require("installed");
+var Banner=Require("banner");
+var Installed=Require("installed");
 var stores=Require("stores");
-var download=Require("download");
+var Download=Require("download");
 var liveupdate=Require("liveupdate");
 var main = React.createClass({displayName: 'main',
   getInitialState: function() {
@@ -3573,9 +3601,17 @@ var main = React.createClass({displayName: 'main',
       },this);
     }
   },
+  componentDidUpdate:function() {
+    if (window.location.hash && window.location.hash!=this.hash) {
+      this.checkHashTag(window.location.hash);
+      this.hash=window.location.hash;
+    } 
+  },  
   componentDidMount:function() {
-    if (window.location.hash)  this.checkHashTag(window.location.hash);
-    //check hash tag
+    if (window.location.hash && window.location.hash!=this.hash) {
+      this.checkHashTag(window.location.hash);
+      this.hash=window.location.hash;
+    } 
   },
   opennew:function() {
     // window.open(   'https://github.com', '_blank' ); for browser
@@ -3593,24 +3629,27 @@ var main = React.createClass({displayName: 'main',
     var args=Array.prototype.slice.call(arguments);
     var type=args.shift();
     if (type=="select") {
-      this.setState({image:"../"+args[0].dbid+"/banner.png"});
+      this.setState({image:"../"+args[0].dbid+"/banner.png", dbid:args[0].dbid});
     } else if (type=="askdownload") {
       this.askDownload(args[0]);
     } else if (type=="backFromDownload") {
       this.setState({askingDownload:false,app:null});  
+    } else if (type=="bannerclick") {
+      var app=stores.findAppById(this.state.dbid);
+      if (app && app.homepage)  window.open(app.homepage);
     }
   },
   
   renderAskDownload:function() {
-    return download({app: this.state.app, action: this.action})
+    return React.createElement(Download, {app: this.state.app, action: this.action})
   },
   renderInstalled:function() {
-    return installed({action: this.action})
+    return React.createElement(Installed, {action: this.action})
   },
   render: function() {
     return (
-      React.DOM.div({className: "main"}, 
-        banner({image: this.state.image}), 
+      React.createElement("div", {className: "main"}, 
+        React.createElement(Banner, {action: this.action, image: this.state.image}), 
         this.state.askingDownload?this.renderAskDownload():this.renderInstalled()
       )
     );    
@@ -3630,7 +3669,7 @@ var comp1 = React.createClass({displayName: 'comp1',
   },
   render: function() {
     return (
-      React.DOM.div(null, 
+      React.createElement("div", null, 
         "Rendering comp1"
       )
     );
@@ -3700,7 +3739,7 @@ var installed = React.createClass({displayName: 'installed',
   },
   renderUpdateButton:function(item,idx) {
     if (item.hasUpdate) {
-      return React.DOM.a({'data-n': idx, onClick: this.askDownload, className: "btn btn-warning"}, "Update")
+      return React.createElement("a", {'data-n': idx, onClick: this.askDownload, className: "btn btn-warning"}, "Update")
     }
   },
   deleteApp:function(e) {
@@ -3709,42 +3748,60 @@ var installed = React.createClass({displayName: 'installed',
   },
   renderDeleteButton:function(item,idx) {
     if (idx==this.state.selected && this.state.deletable && item.path!="installer") {
-      return React.DOM.a({'data-path': item.path, onClick: this.deleteApp, className: "btn btn-danger pull-right"}, "×")
+      return React.createElement("a", {'data-path': item.path, onClick: this.deleteApp, className: "btn btn-danger pull-right"}, "×")
     }
   },
   renderCaption:function(item,idx) {
     if (idx==this.state.selected) {
-      return React.DOM.button({title: item.version +"-"+ item.build, className: "caption", 'data-path': item.path, onClick: this.opendb}, item.title)
+      return React.createElement("button", {title: item.version +"-"+ item.build, className: "caption", 'data-path': item.path, onClick: this.opendb}, item.title)
     } else { 
       //https://github.com/facebook/react/issues/134
-      return React.DOM.a({href: "#", onClick: this.select}, item.title)
+      return React.createElement("a", {href: "#", onClick: this.select}, item.title)
     }
   },
   renderItem:function(item,idx) {
     var classes="";
     if (item.path=="installer" && !item.hasUpdate) return null;
     if (idx==this.state.selected) classes="info";
-    return (React.DOM.tr({'data-i': idx, onClick: this.select, key: "i"+idx, className: classes}, 
-      React.DOM.td(null, this.renderCaption(item,idx), " ", this.renderUpdateButton(item,idx)), 
-      React.DOM.td(null, this.renderDeleteButton(item,idx))
+    return (React.createElement("tr", {'data-i': idx, onClick: this.select, key: "i"+idx, className: classes}, 
+      React.createElement("td", null, this.renderCaption(item,idx), " ", this.renderUpdateButton(item,idx)), 
+      React.createElement("td", null, this.renderDeleteButton(item,idx))
     ));
   },
-  renderWelcome:function() {
+  renderAccelon:function() {
     //if (this.state.installed && this.state.installed.length<2)  
-    return ( React.DOM.div(null, React.DOM.hr(null), React.DOM.a({onClick: this.goAccelonWebsite, href: "#"}, "Get Accelon Database")) );
+    return ( React.createElement("footer", {className: "footer accelon text-center"}, React.createElement("br", null), React.createElement("br", null), React.createElement("hr", null), 
+      "Powered by ", React.createElement("a", {onClick: this.goWebsite, href: "#"}, "Accelon"), ", Ksanaforge 2014" 
+      ) );
     //else return <span></span>;
   },
-  goAccelonWebsite:function() {
+  goWebsite:function() {
     window.open("http://accelon.github.io");
+  },
+  renderEmpty:function() {
+    if (this.state.installed.length) {
+      return ( React.createElement("span", null) );
+    } else {
+      return ( React.createElement("div", null, 
+        React.createElement("a", {onClick: this.goWebsite, href: "http://accelon.github.io"}, "Get Accelon Database")
+      ) );
+    }
   },
   render: function() {
     return (
-      React.DOM.div(null, 
-        React.DOM.table({className: "table table-hover"}, 
-        this.state.installed.map(this.renderItem)
+      React.createElement("div", null, 
+      React.createElement("div", {className: "row"}, 
+        React.createElement("div", {className: "col-md-2"}), 
+        React.createElement("div", {className: "col-md-10"}, 
+        React.createElement("table", {className: "table table-hover"}, 
+          this.state.installed.map(this.renderItem)
         ), 
-        this.renderWelcome()
+          this.renderEmpty()
+        )
+      ), 
+              this.renderAccelon()
       )
+
     );
   }
 });
@@ -3763,10 +3820,13 @@ var banner = React.createClass({displayName: 'banner',
   imageNotFound:function() {
     this.refs.banner.getDOMNode().src="banner.png";
   },
+  imgclick:function() {
+    this.props.action("bannerclick");
+  },
   render: function() {
     return (
-      React.DOM.div(null, 
-        React.DOM.img({ref: "banner", className: "banner", src: this.props.image, 
+      React.createElement("div", null, 
+        React.createElement("img", {onClick: this.imgclick, ref: "banner", className: "banner", src: this.props.image, 
         onError: this.imageNotFound})
       )
     );
@@ -3824,7 +3884,7 @@ var downloaded = Reflux.createStore({
     }
 });
 
-var stores={downloaded:downloaded,updatables:updatables};
+var stores={downloaded:downloaded,updatables:updatables,findAppById:findAppById};
 
 module.exports=stores;
 });
@@ -3881,30 +3941,30 @@ var download = React.createClass({displayName: 'download',
   renderDownloading:function() {
     var percent= Math.floor(100*(this.state.downloadedByte  / this.totalDownloadByte() ));
     return (
-    React.DOM.div(null, 
-      React.DOM.div({className: "col-sm-offset-2 col-sm-8"}, 
-          React.DOM.div(null, "Downloading ", this.props.app.title, React.DOM.br(null)), 
-          React.DOM.div({className: "progress"}, 
-            React.DOM.div({className: "progress-bar", style: {"width": percent+"%"}}, percent, "%")
+    React.createElement("div", null, 
+      React.createElement("div", {className: "col-sm-offset-2 col-sm-8"}, 
+          React.createElement("div", null, "Downloading ", this.props.app.title, React.createElement("br", null)), 
+          React.createElement("div", {className: "progress"}, 
+            React.createElement("div", {className: "progress-bar", style: {"width": percent+"%"}}, percent, "%")
           ), 
-          React.DOM.div(null, "Remaining ", this.remainHumanSize(), " ", React.DOM.br(null), React.DOM.hr(null))
+          React.createElement("div", null, "Remaining ", this.remainHumanSize(), " ", React.createElement("br", null), React.createElement("hr", null))
       ), 
 
-      React.DOM.div({className: "col-sm-2 col-sm-offset-5"}, 
-            React.DOM.a({onClick: this.cancelDownload, className: "btn btn-danger"}, "Cancel Download")
+      React.createElement("div", {className: "col-sm-2 col-sm-offset-5"}, 
+            React.createElement("a", {onClick: this.cancelDownload, className: "btn btn-danger"}, "Cancel Download")
         )
     )
     );
   },
   renderAsking:function() {
     return (
-      React.DOM.div(null, 
-        React.DOM.a({onClick: this.backFromDownload, className: "btn btn-warning"}, "Back"), React.DOM.br(null), 
-        this.props.app.title, " (", this.props.app.dbid, ")", React.DOM.br(null), 
-        "Download Size: ", React.DOM.span(null, this.humanSize()), React.DOM.br(null), 
-        React.DOM.div(null, 
-            React.DOM.div({className: "col-sm-2 col-sm-offset-5"}, 
-              React.DOM.a({onClick: this.startDownload, className: "btn btn-primary btn-lg"}, "Download")
+      React.createElement("div", null, 
+        React.createElement("a", {onClick: this.backFromDownload, className: "btn btn-warning"}, "Back"), React.createElement("br", null), 
+        this.props.app.title, " (", this.props.app.dbid, ")", React.createElement("br", null), 
+        "Download Size: ", React.createElement("span", null, this.humanSize()), React.createElement("br", null), 
+        React.createElement("div", null, 
+            React.createElement("div", {className: "col-sm-2 col-sm-offset-5"}, 
+              React.createElement("a", {onClick: this.startDownload, className: "btn btn-primary btn-lg"}, "Download")
             )
         )
         
@@ -3916,13 +3976,13 @@ var download = React.createClass({displayName: 'download',
   },
   renderDone:function() {
     return (
-      React.DOM.div(null, 
-        React.DOM.a({onClick: this.backFromDownload, className: "btn btn-warning"}, "Back"), React.DOM.br(null), 
+      React.createElement("div", null, 
+        React.createElement("a", {onClick: this.backFromDownload, className: "btn btn-warning"}, "Back"), React.createElement("br", null), 
 
-        React.DOM.div(null, "Download Completed ", this.props.app.title), 
-        React.DOM.div(null, "Status : ", this.state.done, " "), 
-        React.DOM.div({className: "col-sm-2 col-sm-offset-5"}, 
-            React.DOM.a({onClick: this.openapp, className: "btn btn-success btn-lg"}, "Start"), React.DOM.br(null)
+        React.createElement("div", null, "Download Completed ", this.props.app.title), 
+        React.createElement("div", null, "Status : ", this.state.done, " "), 
+        React.createElement("div", {className: "col-sm-2 col-sm-offset-5"}, 
+            React.createElement("a", {onClick: this.openapp, className: "btn btn-success btn-lg"}, "Start"), React.createElement("br", null)
         )
       )
     );

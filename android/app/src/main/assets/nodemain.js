@@ -2,13 +2,9 @@
 
 if (typeof process !="undefined") {			// checking if node.js is running
 	nodeRequire=require;			// browser side package will overwrite require
-	global.nodeRequire=require;
-	if (typeof window!="undefined") window.nodeRequire=nodeRequire;
 	if (process.versions["node-webkit"]) {	// checking if nw is running
-		  var watchfn="../node_scripts/watch.js";
-			if (require("fs").existsSync(watchfn)){
-				require(watchfn);	// setup developing environment
-			}	
-  			
+		var fs=require("fs");
+		var watchfn="../node_scripts/watch.js";
+		if (fs.existsSync(watchfn))	require(watchfn)	// setup developing environment
 	}
 }

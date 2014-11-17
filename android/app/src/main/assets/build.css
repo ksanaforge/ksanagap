@@ -7117,11 +7117,14 @@ td.visible-print {
   }
 }
 
-.main {font-size:200%;}
+.main {font-size:200%;overflow-x: hidden;}
 .comp1 {}
-.installed {}
+.installed {
+}
 a.caption {cursor:pointer;}
 .version {font-size:50%;}
+.accelon{font-size:50%;}
+
 .banner {width:auto;max-height:140px;}
 
 
