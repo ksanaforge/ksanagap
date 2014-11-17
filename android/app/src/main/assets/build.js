@@ -542,6 +542,7 @@ var jsonp=function(url,dbid,callback,context) {
     script.parentNode.removeChild(script);
   }
   window.jsonp_handler=function(data) {
+    console.log("receive from ksana.js",data);
     if (typeof data=="object") {
       data.dbid=dbid;
       callback.apply(context,[data]);    
@@ -549,16 +550,17 @@ var jsonp=function(url,dbid,callback,context) {
   }
 
   window.jsonp_error_handler=function() {
-    //console.error("url unreachable",url);
+    console.error("url unreachable",url);
     callback.apply(context,[null]);
   }
 
   script=document.createElement('script');
   script.setAttribute('id', "jsonp");
   script.setAttribute('onerror', "jsonp_error_handler()");
-
-  script.setAttribute('src', url+'?"'+(new Date().getTime()));
+  url=url+'?'+(new Date().getTime());
+  script.setAttribute('src', url);
   document.getElementsByTagName('head')[0].appendChild(script); 
+  console.log("invoke jsonp",url);
 }
 var runtime_version_ok=function(minruntime) {
   if (!minruntime) return true;//not mentioned.
@@ -3584,7 +3586,7 @@ var Download=Require("download");
 var liveupdate=Require("liveupdate");
 var main = React.createClass({displayName: 'main',
   getInitialState: function() {
-    return {dirs:[],image:"banner.png",app:null,askingDownload:false};
+    return {dirs:[],message:"",image:"banner.png",app:null,askingDownload:false};
   },
   checkHashTag:function(hash) {
     var idx=hash.indexOf("installfrom=");
@@ -3592,26 +3594,21 @@ var main = React.createClass({displayName: 'main',
     var installurl=hash.substring(idx+12).replace(/accelon:/g,'http:');
 
     var dbid=installurl.match(/\/([^\/]*?)\/?$/);
-    installurl+='/ksana.js';
+    if (installurl[installurl.length-1]!='/') installurl+='/';
+    installurl+='ksana.js';
     if (dbid) {
       dbid=dbid[1];
-      console.log(installurl);
+      console.log("install from",installurl);
+      this.setState({message:"checking "+installurl});
       liveupdate.jsonp(installurl,dbid,function(app){
+        console.log("asking download");
         this.askDownload(app);
       },this);
     }
   },
-  componentDidUpdate:function() {
-    if (window.location.hash && window.location.hash!=this.hash) {
-      this.checkHashTag(window.location.hash);
-      this.hash=window.location.hash;
-    } 
-  },  
   componentDidMount:function() {
-    if (window.location.hash && window.location.hash!=this.hash) {
-      this.checkHashTag(window.location.hash);
-      this.hash=window.location.hash;
-    } 
+    this.checkHashTag(window.location.hash);
+    this.hash=window.location.hash;
   },
   opennew:function() {
     // window.open(   'https://github.com', '_blank' ); for browser
@@ -3623,7 +3620,7 @@ var main = React.createClass({displayName: 'main',
     });
   },
   askDownload:function(app) { //from hashtag or installed
-    this.setState({askingDownload:true,app:app});
+    this.setState({message:"",askingDownload:true,app:app});
   },
   action:function() {
     var args=Array.prototype.slice.call(arguments);
@@ -3650,6 +3647,7 @@ var main = React.createClass({displayName: 'main',
     return (
       React.createElement("div", {className: "main"}, 
         React.createElement(Banner, {action: this.action, image: this.state.image}), 
+        this.state.message, 
         this.state.askingDownload?this.renderAskDownload():this.renderInstalled()
       )
     );    
@@ -3700,7 +3698,8 @@ var installed = React.createClass({displayName: 'installed',
   onDownloadsChanged:function(downloads) {
     this.setState({installed:downloads});
     this.props.action("select",this.state.installed[0]);
-    setTimeout(actions.checkHasUpdate,1000);
+    //wait one minute before checking update, avoid conflict with update from url
+    setTimeout(actions.checkHasUpdate,60000); 
   },
   componentDidMount:function() {
     this.unsubscribe1 = stores.downloaded.listen(this.onDownloadsChanged);

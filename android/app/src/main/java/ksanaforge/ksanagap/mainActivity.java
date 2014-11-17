@@ -18,8 +18,6 @@ import android.os.Environment;
 import ksanaforge.ksanagap.jsintf.*;
 import android.os.Build;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static ksanaforge.ksanagap.R.layout.activity_main;
 import java.io.File;
@@ -35,7 +33,7 @@ public class mainActivity extends Activity {
     protected String[] dirs=null;
     protected WebView wv;
     //  final console_droid console_api= new console_droid();//this);  //already have in 4.4
-
+    String installerpath="";
     public String getKsanapath() {
         return ksanapath;
     }
@@ -46,6 +44,7 @@ public class mainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
+        installerpath= Environment.getExternalStorageDirectory() +"/"+this.getString(R.string.app_rootpath)+"/installer/";
 
         wv=(WebView)findViewById(R.id.webview);
         initWebview(wv);
@@ -67,14 +66,21 @@ public class mainActivity extends Activity {
             if (!list.contains("installer")) {
                 welcome();
             }  else {
-                int i=list.indexOf("installer");
-                ksanagap_api.switchApp(dirs[i]+installurl);
+
+                if (installer.newer(getAssets(),installerpath) ) {
+                    welcome();
+                }  else {
+                    int i=list.indexOf("installer");
+                    ksanagap_api.switchApp(dirs[i]+installurl);
+
+                }
             }
         }
 
         IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         registerReceiver(jsonReceiver, filter);
     }
+
     public void loadApps()  {
         dirs=getAppDirs();
     }
@@ -141,7 +147,6 @@ public class mainActivity extends Activity {
         myWebView.addJavascriptInterface(ksanagap_api.kfs_api, "kfs"); //for kdb
     }
     public void welcome() {
-        String installerpath= Environment.getExternalStorageDirectory() +"/"+this.getString(R.string.app_rootpath)+"/installer/";
         try {
             installer.copySelf(getAssets(),installerpath);
             loadApps();
@@ -199,5 +204,12 @@ public class mainActivity extends Activity {
         String installurl=intent.getStringExtra("installapp");
 
         //processUrl(intent.getData());
+    }
+
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        unregisterReceiver(jsonReceiver);
     }
 }
