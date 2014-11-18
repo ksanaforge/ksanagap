@@ -316,14 +316,20 @@ public class kfs_droid {
             for (File child : fileOrDirectory.listFiles())
                 DeleteRecursive(child);
 
-        fileOrDirectory.delete();
+        //http://stackoverflow.com/questions/11539657/open-failed-ebusy-device-or-resource-busy
+        final File to = new File(fileOrDirectory.getAbsolutePath() + System.currentTimeMillis());
+        fileOrDirectory.renameTo(to);
+        to.delete();
     }
 
     @JavascriptInterface
     public void deleteApp(String appname) {
         if (appname=="" || appname=="installer") return;//cannot remove installer
         File appfolder=new File(parentPath()+appname);
-        if (appfolder.exists()) DeleteRecursive(appfolder);
+        if (!appfolder.exists()) return;
+
+
+        DeleteRecursive(appfolder);
 
         activity.runOnUiThread(new Runnable() {
             public void run() {

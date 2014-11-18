@@ -10,6 +10,7 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import ksanaforge.ksanagap.jsintf.JSON;
 import ksanaforge.ksanagap.jsintf.fs_droid;
@@ -32,7 +33,7 @@ public class installer {
 
 
     static public boolean newer(AssetManager assets,String installerpath) {
-        Date date1=new Date(1974,9,30),date2=new Date(1974,9,30);
+        Date date1=new Date(0),date2=new Date(0);
         try {
             String sdjsonstr=fs_droid.getStringFromFile(installerpath+"ksana.js");
             sdjsonstr=sdjsonstr.substring(14,sdjsonstr.length()-1);
