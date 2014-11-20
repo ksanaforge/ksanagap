@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Accelon</string>
+    <string name="storeurl">http://accelon.github.io</string>
     <string name="app_rootpath">accelon</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_installer">Installer</string>
