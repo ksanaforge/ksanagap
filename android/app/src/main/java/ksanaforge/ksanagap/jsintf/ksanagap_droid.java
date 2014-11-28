@@ -67,6 +67,7 @@ public class ksanagap_droid {
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 activity.setTitle(path);
+                activity.setActiveApp(path);
                 activity.getWebView().loadUrl("file://" + sdpath + "index.html" + hashtag);
             }
         });

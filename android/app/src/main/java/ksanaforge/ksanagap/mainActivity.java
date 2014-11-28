@@ -6,10 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +27,7 @@ import java.util.List;
 
 public class mainActivity extends Activity {
     private String ksanapath;
+    private Menu menu=null;
     final ksanagap_droid ksanagap_api= new ksanagap_droid();//this);
     protected String[] dirs=null;
     protected WebView wv;
@@ -72,7 +71,6 @@ public class mainActivity extends Activity {
                 }  else {
                     int i=list.indexOf("installer");
                     ksanagap_api.switchApp(dirs[i]+installurl);
-
                 }
             }
         }
@@ -134,6 +132,18 @@ public class mainActivity extends Activity {
             }
         }
     };
+    public void setActiveApp(String app) {
+        if (this.menu==null) return;
+        MenuItem installeritem = this.menu.findItem(R.id.installer);
+        MenuItem onlinestoreitem = this.menu.findItem(R.id.onlinestore);
+        if (app.equals("installer")) {
+            installeritem.setVisible(false);
+            onlinestoreitem.setVisible(true);
+        } else {
+            installeritem.setVisible(true);
+            onlinestoreitem.setVisible(false);
+        }
+    }
     protected void initWebview(WebView myWebView) {
         //MyWebView myWebView = (MyWebView) findViewById(R.id.webview);
         myWebView.getSettings().setDomStorageEnabled(true);
@@ -155,13 +165,16 @@ public class mainActivity extends Activity {
             e.printStackTrace();
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        createAppMenu(menu);
+        this.menu=menu;
+        //createAppMenu(menu);
         return true;
     }
+
     protected String[] getAppDirs() {
         ksanapath= Environment.getExternalStorageDirectory() +"/"+ this.getString(R.string.app_rootpath)+"/";
         ksanagap_api.ksanapath=ksanapath;
@@ -177,32 +190,40 @@ public class mainActivity extends Activity {
         }
         return null;
     }
+
     private int APPITEMSTART=100;
     protected void createAppMenu(Menu menu) {
         for (int i=0;i<dirs.length;i++) {
             menu.add(Menu.NONE, i+APPITEMSTART, Menu.NONE, dirs[i]);
         }
     }
+
+    /*
     protected void gotoApp(int id){
         String appname=dirs[id-APPITEMSTART];
         ksanagap_api.switchApp(appname);
     }
-
-    protected void visitstore() {
+    */
+    protected void onlinestore() {
         startActivity(new Intent(Intent.ACTION_VIEW,
                 Uri.parse(this.getString(R.string.storeurl))));
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.visitstore) {
-            visitstore();
+        if (id == R.id.onlinestore) {
+            onlinestore();
             return false;
         }
-        gotoApp(id);
+        if (id == R.id.installer) {
+            ksanagap_api.switchApp("installer");
+            return false;
+        }
+        //gotoApp(id);
         return super.onOptionsItemSelected(item);
     }
 

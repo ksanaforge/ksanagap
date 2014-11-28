@@ -2,8 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".mainActivity" >
     <item
-        android:id="@+id/visitstore"
+        android:id="@+id/installer"
         android:showAsAction="always"
-        android:title="Visit Store">
+        android:title="installer"
+        android:visible="false">
     </item>
+    <item
+        android:id="@+id/onlinestore"
+        android:showAsAction="always"
+        android:title="Online Store">
+    </item>
+
 </menu>
