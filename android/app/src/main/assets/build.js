@@ -3597,6 +3597,13 @@ var main = React.createClass({displayName: 'main',
     installurl+='ksana.js';
     if (dbid) {
       dbid=dbid[1];
+      console.log("dbid",dbid);
+      if (dbid=="master" && installurl.indexOf("rawgit.com")>-1) { //deal with hosting on rawgit
+        var dbid2=installurl.match(/\/([^\/]*?)\/master/);
+        if (dbid2) dbid=dbid2[1];
+        console.log("dbid2",dbid);
+      }
+
       console.log("install from",installurl);
       this.setState({message:"checking "+installurl});
       liveupdate.jsonp(installurl,dbid,function(app){
