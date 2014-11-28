@@ -77,7 +77,9 @@
            return 0;
        }
     }
-    if ([fm copyItemAtURL:source toURL:targetURL error:&error]) {
+    if ([fm fileExistsAtPath:targetFile ]) {
+        [fm removeItemAtPath:targetFile error:nil];
+    }if ([fm copyItemAtURL:source toURL:targetURL error:&error]) {
         copied=true;
     } else {
         NSLog(@"%@",[error localizedDescription]);
@@ -126,6 +128,9 @@
     NSLog(@"copy %@ to %@",[location path], targetFile );
     moved=[self moveFile :location target:targetFile];
     
+    if(!moved){
+        NSLog(@"error moving file%@", targetFile);
+    }
     return moved;
 }
 
@@ -134,8 +139,9 @@
     if (idx==-1) return;
     
     if ([self replaceWith :location replacing:idx]) {
-        downloadedFileCount++;
+        //error replacing file
     }
+    downloadedFileCount++;
 }
 
 -(void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite{

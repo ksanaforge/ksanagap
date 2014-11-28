@@ -18,8 +18,8 @@
     //UIToolbar *toobar;
     UINavigationBar *navBar;
     UINavigationItem *navTitle;
-    UIBarButtonItem *homeButton;
-    UIBarButtonItem *websiteButton;
+    UIBarButtonItem *rightButton;
+   // UIBarButtonItem *websiteButton;
     NSArray *buttons;
     NSArray *directories;
 }
@@ -30,17 +30,19 @@
 kfs_ios *kfs;
 fs_ios *fs;
 ksanagap_ios *ksanagap;
-int TOOLBARH=44;
+int TOOLBARH=48;
+NSString *ONLINESTORE=@"ONLINE STORE";
+
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    webView = [[UIWebView alloc] initWithFrame:CGRectMake(0,TOOLBARH,self.view.frame.size.width,self.view.frame.size.height)];    // CGRectOffset(self.view.frame, 0, 0)];
+    webView = [[UIWebView alloc] initWithFrame:CGRectMake(0,TOOLBARH,self.view.frame.size.width,self.view.frame.size.height-TOOLBARH)];    // CGRectOffset(self.view.frame, 0, 0)];
     webView.delegate = self;
     
-    navBar=[[UINavigationBar alloc] initWithFrame:CGRectMake(0,0,self.view.frame.size.width,TOOLBARH)];
+    navBar=[[UINavigationBar alloc] initWithFrame:CGRectMake(0,4,self.view.frame.size.width,TOOLBARH)];
     navTitle=[[UINavigationItem alloc] initWithTitle:@"Accelon"];
     
 
@@ -48,11 +50,11 @@ int TOOLBARH=44;
 
   //  NSMutableArray *mutArray = [[NSMutableArray alloc] init];
   //
-    homeButton = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStylePlain target:self action:@selector(homeTapped:)];
-    websiteButton = [[UIBarButtonItem alloc] initWithTitle:@"Get Database" style:UIBarButtonItemStylePlain target:self action:@selector(websiteTapped:)];
+    //homeButton = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStylePlain target:self action:@selector(homeTapped:)];
+    rightButton = [[UIBarButtonItem alloc] initWithTitle:ONLINESTORE style:UIBarButtonItemStylePlain target:self action:@selector(rightButtonTapped:)];
 
-    navTitle.rightBarButtonItem=websiteButton;
-    navTitle.leftBarButtonItem=homeButton;
+    navTitle.rightBarButtonItem=rightButton;
+    //navTitle.leftBarButtonItem=homeButton;
     [navBar pushNavigationItem:navTitle animated:NO];
     
 
@@ -69,7 +71,7 @@ int TOOLBARH=44;
 
     long idx=-1;
     idx=[directories indexOfObject:@"installer"];
-    if (idx==-1 || idx>=directories.count) {
+    if (idx==-1 || idx>=directories.count || [self installerNewer ]) {
         [self copyInstaller];
         [self loadApps];
         idx=[directories indexOfObject:@"installer"];
@@ -78,6 +80,36 @@ int TOOLBARH=44;
     if (idx<directories.count && idx>=0) {
         [self loadHomepage:directories[idx]];
     }
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkRotation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    
+    
+}
+
+-(void) checkRotation:(NSNotification*)notification {
+    UIInterfaceOrientation orienatation = [UIApplication sharedApplication].statusBarOrientation;
+    if (orienatation==UIInterfaceOrientationLandscapeLeft || orienatation==UIInterfaceOrientationLandscapeRight) {
+    } else {
+    }
+    navBar.frame=CGRectMake(0,4,self.view.frame.size.width,TOOLBARH);
+    webView.frame=CGRectMake(0,TOOLBARH,self.view.frame.size.width,self.view.frame.size.height-TOOLBARH);
+}
+
+-(BOOL) installerNewer {
+    NSError *error;
+    NSString* bundle_ksana=[[NSBundle mainBundle] pathForResource:@"ksana.js" ofType:@""];
+    NSString* installed_ksana=[NSString stringWithFormat:@"%@%@", [ksanagap getAppDirectory:@"installer"], @"ksana.js"];
+    NSDictionary *bundle_ksana_attributes=[[NSFileManager defaultManager] attributesOfItemAtPath:bundle_ksana error:&error];
+    NSDictionary *installed_ksana_attributes=[[NSFileManager defaultManager] attributesOfItemAtPath:installed_ksana error:&error];
+    
+    NSDate* bundle_ksana_date=[bundle_ksana_attributes fileModificationDate];
+    
+    NSDate* installed_ksana_date=[installed_ksana_attributes fileModificationDate];
+
+    if ([bundle_ksana_date compare:installed_ksana_date] ==NSOrderedDescending) {
+        return true;
+    }
+    return false;
 }
 -(void) copyInstaller {
     NSString *files=@"index.html$build.js$build.css$nodemain.js$systemmenu.js$banner.png$package.json$ksana.js$jquery.js$react-with-addons.js";
@@ -118,18 +150,30 @@ int TOOLBARH=44;
     
     return dirs;
 }
+/*
 - (void)homeTapped:(UIBarButtonItem *)button {
     [self loadHomepage:@"installer"];
 }
-- (void)websiteTapped:(UIBarButtonItem *)button {
-    NSDictionary *data=[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"]];
-    NSString *accelonwebsite=[data objectForKey:@"website"];
-    if (!accelonwebsite) accelonwebsite=@"http://accelon.github.io";
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:accelonwebsite]];
+ */
+- (void)rightButtonTapped:(UIBarButtonItem *)button {
+    
+    if (  [navTitle.title isEqualToString:@"installer"]) {
+        NSDictionary *data=[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"]];
+        NSString *accelonwebsite=[data objectForKey:@"website"];
+        if (!accelonwebsite) accelonwebsite=@"http://accelon.github.io";
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:accelonwebsite]];
+    } else {
+        [self loadHomepage:@"installer"];
+    }
 }
 
 - (void) setNavTitle:(NSString*)appname{
     navTitle.title=appname;
+    if ([appname isEqualToString:@"installer"]) {
+        [rightButton setTitle:ONLINESTORE];
+    } else {
+        [rightButton setTitle:@"INSTALLER"];
+    }
 }
 - (void)loadHomepage:(NSString *)app_hash {
     NSString *appName;
@@ -152,7 +196,7 @@ int TOOLBARH=44;
     //NSString *html = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:&error];
     if (webView) {
         [webView removeFromSuperview];
-        webView = [[UIWebView alloc] initWithFrame:CGRectOffset(self.view.frame, 0, TOOLBARH)];
+        webView = [[UIWebView alloc] initWithFrame:CGRectMake(0,TOOLBARH,self.view.frame.size.width,self.view.frame.size.height-TOOLBARH)];    // CGRectOffset(self.view.frame, 0, 0)];
         webView.delegate = self;
         [self.view addSubview:webView];
         
