@@ -71,7 +71,6 @@ public class ksanagap_droid {
                 activity.getWebView().loadUrl("file://" + sdpath + "index.html" + hashtag);
             }
         });
-
     }
     protected Boolean downloading=false;
     protected DownloadManager downloadManager;
@@ -236,11 +235,14 @@ public class ksanagap_droid {
     }
 
     @JavascriptInterface
-    public String runtime_version() {
-        return "1.3";
+    public long runtime_version() {
+        return 4;
     }
     /*
-       1.2 liveupdate on iOS and Android
+        1.2 liveupdate on iOS and Android
         1.3  ksana.js files support different host, if not specified use baseurl
+
+        //use numberic number
+        4 put ksana.js into ksanagap
      */
 }
