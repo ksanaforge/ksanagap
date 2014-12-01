@@ -235,8 +235,8 @@ public class ksanagap_droid {
     }
 
     @JavascriptInterface
-    public long runtime_version() {
-        return 4;
+    public String runtime_version() {
+        return "1.3";
     }
     /*
         1.2 liveupdate on iOS and Android
