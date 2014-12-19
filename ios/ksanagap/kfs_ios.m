@@ -432,11 +432,15 @@ uint32_t *phraseSearch (uint32_t** postings, uint32_t *postingsize, uint64_t npo
     }
 
     for (int i=1;i<nposting;i++) {
-        newr = pland(r, rsize, postings[i],postingsize[i], i, &newsize);
-        if (i>1)free(r); //free intermediate result
-        r=newr;
-        rsize=newsize;
-        
+        uint32_t *next=postings[i];
+        if (postingsize[i]==1 && next[0]==0) {
+            //wildcard , do nothing
+        } else {
+            newr = pland(r, rsize, postings[i],postingsize[i], i, &newsize);
+            if (i>1 && r!=postings[0] )free(r); //free intermediate result
+            r=newr;
+            rsize=newsize;
+        }
     }
     *size=rsize;
     return r;
@@ -448,26 +452,34 @@ uint32_t *phraseSearch (uint32_t** postings, uint32_t *postingsize, uint64_t npo
     uint64_t nposting=[positions count];
     uint32_t ** postings=malloc(nposting*sizeof(uint32_t *));
     uint32_t *postingsize=malloc(nposting*sizeof(uint32_t));
-    
+    uint32_t *wildcardposting=0;
     for (int i=0;i<nposting;i++) {
         NSArray *bpos=positions[i];
         uint32_t pos=((NSNumber*)bpos[0]).intValue +1 ; //skip signature
-        uint32_t blocksz=((NSNumber*)bpos[1]).intValue - 1;
+        uint32_t blocksz=((NSNumber*)bpos[1]).intValue ;
         
-        [h seekToFileOffset:pos];
-        NSData *data = [h readDataOfLength:blocksz];
+        if (blocksz==0) { //wildcard
+            wildcardposting=malloc(sizeof(uint32_t));
+            *(wildcardposting)=0;
+            postings[i]=wildcardposting;
+            postingsize[i]=1;
+        } else {
+            [h seekToFileOffset:pos];
+            NSData *data = [h readDataOfLength:blocksz-1];
         
-        uint8_t * c = (uint8_t*)([data bytes]);
+            uint8_t * c = (uint8_t*)([data bytes]);
         
-        uint32_t sz;
-        postings[i]=unpack(c ,blocksz, &sz);
-        postingsize[i]=sz;
-
+            uint32_t sz;
+            postings[i]=unpack(c ,blocksz-1, &sz);
+            postingsize[i]=sz;
+        }
     }
     uint32_t size;
     uint32_t* p=phraseSearch( postings , postingsize, nposting,&size);
     
-    for (int i=0;i<nposting;i++) free(postings[i]);
+    for (int i=0;i<nposting;i++) {
+        free(postings[i]);
+    }
     free(postings);
     free(postingsize);
     
