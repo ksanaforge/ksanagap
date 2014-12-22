@@ -228,7 +228,12 @@ public class kfs_droid {
         if (postings.size()==1) return postings.get(0);
         long []r=postings.get(0);
         for (int i=1;i<postings.size();i++) {
-            r = pland(r, postings.get(i),i);
+            long []next=postings.get(i);
+            if (next.length==1 && next[0]==0) {
+                //wildcard , do nothing
+            } else {
+                r = pland(r, next,i);
+            }
         }
         return r;
     }
@@ -240,10 +245,17 @@ public class kfs_droid {
             JSONArray bpos=blockpos.getJSONArray(i);
             int pos=bpos.getInt(0);
             int blocksize=bpos.getInt(1);
-            byte[] b=readBytes(handle, pos+1, blocksize-1);//skip signature
-            int[] adv= new int[1];
-            long[] arr=unpack_int(b,blocksize,false,adv);
-            postings.add(arr);
+
+            if (blocksize==0) { //wildcard
+                long[] arr=new long[1];
+                arr[0]=0;
+                postings.add(arr);
+            } else {
+                byte[] b=readBytes(handle, pos+1, blocksize-1);//skip signature
+                int[] adv= new int[1];
+                long[] arr=unpack_int(b,blocksize,false,adv);
+                postings.add(arr);
+            }
         }
         long[] arr=phraseSearch(postings);
         String str=Arrays.toString(arr);

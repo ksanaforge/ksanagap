@@ -7118,6 +7118,7 @@ td.visible-print {
 }
 
 .main {font-size:200%;overflow-x: hidden;}
+.message {font-size:75%;}
 .comp1 {}
 .installed {
 }
