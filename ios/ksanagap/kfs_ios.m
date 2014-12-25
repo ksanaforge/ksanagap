@@ -478,7 +478,7 @@ uint32_t *phraseSearch (uint32_t** postings, uint32_t *postingsize, uint64_t npo
     uint32_t* p=phraseSearch( postings , postingsize, nposting,&size);
     
     for (int i=0;i<nposting;i++) {
-        free(postings[i]);
+        if(p!=postings[i]) free(postings[i]);
     }
     free(postings);
     free(postingsize);
