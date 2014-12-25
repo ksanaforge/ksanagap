@@ -8,16 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0138B3341A0880E900E7A7DA /* ksanagap_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0138B3331A0880E900E7A7DA /* ksanagap_ios.m */; };
-		0138B3411A08DA2500E7A7DA /* banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 0138B3371A08DA2500E7A7DA /* banner.png */; };
-		0138B3421A08DA2500E7A7DA /* build.css in Resources */ = {isa = PBXBuildFile; fileRef = 0138B3381A08DA2500E7A7DA /* build.css */; };
-		0138B3431A08DA2500E7A7DA /* build.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B3391A08DA2500E7A7DA /* build.js */; };
-		0138B3441A08DA2500E7A7DA /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33A1A08DA2500E7A7DA /* index.html */; };
-		0138B3451A08DA2500E7A7DA /* jquery.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33B1A08DA2500E7A7DA /* jquery.js */; };
-		0138B3461A08DA2500E7A7DA /* ksana.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33C1A08DA2500E7A7DA /* ksana.js */; };
-		0138B3471A08DA2500E7A7DA /* nodemain.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33D1A08DA2500E7A7DA /* nodemain.js */; };
-		0138B3481A08DA2500E7A7DA /* package.json in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33E1A08DA2500E7A7DA /* package.json */; };
-		0138B3491A08DA2500E7A7DA /* react-with-addons.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B33F1A08DA2500E7A7DA /* react-with-addons.js */; };
-		0138B34A1A08DA2500E7A7DA /* systemmenu.js in Resources */ = {isa = PBXBuildFile; fileRef = 0138B3401A08DA2500E7A7DA /* systemmenu.js */; };
 		0183DF9819FAA8DD008E1249 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DF9719FAA8DD008E1249 /* main.m */; };
 		0183DF9B19FAA8DD008E1249 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DF9A19FAA8DD008E1249 /* AppDelegate.m */; };
 		0183DF9E19FAA8DD008E1249 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DF9D19FAA8DD008E1249 /* ViewController.m */; };
@@ -27,6 +17,16 @@
 		0183DFB219FAA8DD008E1249 /* accelonTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DFB119FAA8DD008E1249 /* accelonTests.m */; };
 		0183DFC119FAAABC008E1249 /* fs_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DFBC19FAAABC008E1249 /* fs_ios.m */; };
 		0183DFC219FAAABC008E1249 /* kfs_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0183DFBE19FAAABC008E1249 /* kfs_ios.m */; };
+		ECCDCA181A4C60FF0032AEE5 /* banner.png in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA161A4C60FF0032AEE5 /* banner.png */; };
+		ECCDCA191A4C60FF0032AEE5 /* bundle.js in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA171A4C60FF0032AEE5 /* bundle.js */; };
+		ECCDCA1E1A4C611B0032AEE5 /* bootstrap.min.css in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA1A1A4C611B0032AEE5 /* bootstrap.min.css */; };
+		ECCDCA1F1A4C611B0032AEE5 /* bootstrap.min.js in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA1B1A4C611B0032AEE5 /* bootstrap.min.js */; };
+		ECCDCA201A4C611B0032AEE5 /* index.css in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA1C1A4C611B0032AEE5 /* index.css */; };
+		ECCDCA211A4C611B0032AEE5 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA1D1A4C611B0032AEE5 /* index.html */; };
+		ECCDCA2A1A4C61380032AEE5 /* jquery.js in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA221A4C61380032AEE5 /* jquery.js */; };
+		ECCDCA2B1A4C61380032AEE5 /* ksana.js in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA231A4C61380032AEE5 /* ksana.js */; };
+		ECCDCA2F1A4C61380032AEE5 /* react-with-addons.js in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA271A4C61380032AEE5 /* react-with-addons.js */; };
+		ECCDCA331A4C61430032AEE5 /* swiperight.png in Resources */ = {isa = PBXBuildFile; fileRef = ECCDCA321A4C61430032AEE5 /* swiperight.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,16 +42,6 @@
 /* Begin PBXFileReference section */
 		0138B3321A0880E900E7A7DA /* ksanagap_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ksanagap_ios.h; path = ../../../ios/ksanagap/ksanagap_ios.h; sourceTree = "<group>"; };
 		0138B3331A0880E900E7A7DA /* ksanagap_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ksanagap_ios.m; path = ../../../ios/ksanagap/ksanagap_ios.m; sourceTree = "<group>"; };
-		0138B3371A08DA2500E7A7DA /* banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = banner.png; path = ../../../installer/banner.png; sourceTree = "<group>"; };
-		0138B3381A08DA2500E7A7DA /* build.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = build.css; path = ../../../installer/build.css; sourceTree = "<group>"; };
-		0138B3391A08DA2500E7A7DA /* build.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = build.js; path = ../../../installer/build.js; sourceTree = "<group>"; };
-		0138B33A1A08DA2500E7A7DA /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = ../../../installer/index.html; sourceTree = "<group>"; };
-		0138B33B1A08DA2500E7A7DA /* jquery.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = jquery.js; path = ../../../installer/jquery.js; sourceTree = "<group>"; };
-		0138B33C1A08DA2500E7A7DA /* ksana.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = ksana.js; path = ../../../installer/ksana.js; sourceTree = "<group>"; };
-		0138B33D1A08DA2500E7A7DA /* nodemain.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = nodemain.js; path = ../../../installer/nodemain.js; sourceTree = "<group>"; };
-		0138B33E1A08DA2500E7A7DA /* package.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = package.json; path = ../../../installer/package.json; sourceTree = "<group>"; };
-		0138B33F1A08DA2500E7A7DA /* react-with-addons.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "react-with-addons.js"; path = "../../../installer/react-with-addons.js"; sourceTree = "<group>"; };
-		0138B3401A08DA2500E7A7DA /* systemmenu.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = systemmenu.js; path = ../../../installer/systemmenu.js; sourceTree = "<group>"; };
 		0183DF9219FAA8DD008E1249 /* accelon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = accelon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0183DF9619FAA8DD008E1249 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0183DF9719FAA8DD008E1249 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -69,6 +59,16 @@
 		0183DFBC19FAAABC008E1249 /* fs_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = fs_ios.m; path = ../../../ios/ksanagap/fs_ios.m; sourceTree = "<group>"; };
 		0183DFBD19FAAABC008E1249 /* kfs_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kfs_ios.h; path = ../../../ios/ksanagap/kfs_ios.h; sourceTree = "<group>"; };
 		0183DFBE19FAAABC008E1249 /* kfs_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = kfs_ios.m; path = ../../../ios/ksanagap/kfs_ios.m; sourceTree = "<group>"; };
+		ECCDCA161A4C60FF0032AEE5 /* banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = banner.png; path = ../../../../ksana2015/installer/banner.png; sourceTree = "<group>"; };
+		ECCDCA171A4C60FF0032AEE5 /* bundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = bundle.js; path = ../../../../ksana2015/installer/bundle.js; sourceTree = "<group>"; };
+		ECCDCA1A1A4C611B0032AEE5 /* bootstrap.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = bootstrap.min.css; path = ../../../../ksana2015/installer/bootstrap.min.css; sourceTree = "<group>"; };
+		ECCDCA1B1A4C611B0032AEE5 /* bootstrap.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = bootstrap.min.js; path = ../../../../ksana2015/installer/bootstrap.min.js; sourceTree = "<group>"; };
+		ECCDCA1C1A4C611B0032AEE5 /* index.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = index.css; path = ../../../../ksana2015/installer/index.css; sourceTree = "<group>"; };
+		ECCDCA1D1A4C611B0032AEE5 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = ../../../../ksana2015/installer/index.html; sourceTree = "<group>"; };
+		ECCDCA221A4C61380032AEE5 /* jquery.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = jquery.js; path = ../../../../ksana2015/installer/jquery.js; sourceTree = "<group>"; };
+		ECCDCA231A4C61380032AEE5 /* ksana.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = ksana.js; path = ../../../../ksana2015/installer/ksana.js; sourceTree = "<group>"; };
+		ECCDCA271A4C61380032AEE5 /* react-with-addons.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "react-with-addons.js"; path = "../../../../ksana2015/installer/react-with-addons.js"; sourceTree = "<group>"; };
+		ECCDCA321A4C61430032AEE5 /* swiperight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = swiperight.png; path = ../../../../ksana2015/installer/swiperight.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,16 +92,16 @@
 		0138B34B1A08DA2E00E7A7DA /* installer */ = {
 			isa = PBXGroup;
 			children = (
-				0138B3371A08DA2500E7A7DA /* banner.png */,
-				0138B3381A08DA2500E7A7DA /* build.css */,
-				0138B3391A08DA2500E7A7DA /* build.js */,
-				0138B33A1A08DA2500E7A7DA /* index.html */,
-				0138B33B1A08DA2500E7A7DA /* jquery.js */,
-				0138B33C1A08DA2500E7A7DA /* ksana.js */,
-				0138B33D1A08DA2500E7A7DA /* nodemain.js */,
-				0138B33E1A08DA2500E7A7DA /* package.json */,
-				0138B33F1A08DA2500E7A7DA /* react-with-addons.js */,
-				0138B3401A08DA2500E7A7DA /* systemmenu.js */,
+				ECCDCA321A4C61430032AEE5 /* swiperight.png */,
+				ECCDCA221A4C61380032AEE5 /* jquery.js */,
+				ECCDCA231A4C61380032AEE5 /* ksana.js */,
+				ECCDCA271A4C61380032AEE5 /* react-with-addons.js */,
+				ECCDCA1A1A4C611B0032AEE5 /* bootstrap.min.css */,
+				ECCDCA1B1A4C611B0032AEE5 /* bootstrap.min.js */,
+				ECCDCA1C1A4C611B0032AEE5 /* index.css */,
+				ECCDCA1D1A4C611B0032AEE5 /* index.html */,
+				ECCDCA161A4C60FF0032AEE5 /* banner.png */,
+				ECCDCA171A4C60FF0032AEE5 /* bundle.js */,
 			);
 			name = installer;
 			sourceTree = "<group>";
@@ -252,19 +252,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0138B3441A08DA2500E7A7DA /* index.html in Resources */,
+				ECCDCA2A1A4C61380032AEE5 /* jquery.js in Resources */,
+				ECCDCA201A4C611B0032AEE5 /* index.css in Resources */,
 				0183DFA119FAA8DD008E1249 /* Main.storyboard in Resources */,
-				0138B3431A08DA2500E7A7DA /* build.js in Resources */,
-				0138B3481A08DA2500E7A7DA /* package.json in Resources */,
 				0183DFA619FAA8DD008E1249 /* LaunchScreen.xib in Resources */,
-				0138B3491A08DA2500E7A7DA /* react-with-addons.js in Resources */,
-				0138B3451A08DA2500E7A7DA /* jquery.js in Resources */,
+				ECCDCA211A4C611B0032AEE5 /* index.html in Resources */,
+				ECCDCA331A4C61430032AEE5 /* swiperight.png in Resources */,
+				ECCDCA191A4C60FF0032AEE5 /* bundle.js in Resources */,
+				ECCDCA2F1A4C61380032AEE5 /* react-with-addons.js in Resources */,
 				0183DFA319FAA8DD008E1249 /* Images.xcassets in Resources */,
-				0138B3421A08DA2500E7A7DA /* build.css in Resources */,
-				0138B3471A08DA2500E7A7DA /* nodemain.js in Resources */,
-				0138B3461A08DA2500E7A7DA /* ksana.js in Resources */,
-				0138B3411A08DA2500E7A7DA /* banner.png in Resources */,
-				0138B34A1A08DA2500E7A7DA /* systemmenu.js in Resources */,
+				ECCDCA1F1A4C611B0032AEE5 /* bootstrap.min.js in Resources */,
+				ECCDCA2B1A4C61380032AEE5 /* ksana.js in Resources */,
+				ECCDCA1E1A4C611B0032AEE5 /* bootstrap.min.css in Resources */,
+				ECCDCA181A4C60FF0032AEE5 /* banner.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

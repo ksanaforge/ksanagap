@@ -12,6 +12,8 @@
 	<dict>
 		<key>21F58A1FDCB4DCD21EC7D0ACCFFF16FE261DD40A</key>
 		<string>https://github.com/ksanaforge/dev2014</string>
+		<key>73D4D1429960E55CF1E6159AB21A41D3F1AB7929</key>
+		<string>https://github.com/ksanaforge/installer</string>
 		<key>A41CE83FFE3FEBCB2029F9204DDCA6460A0E75F5</key>
 		<string>https://github.com/ksanaforge/installer</string>
 		<key>A53257B3B2CA28742EC847754735043F4176E582</key>
@@ -23,6 +25,8 @@
 	<dict>
 		<key>21F58A1FDCB4DCD21EC7D0ACCFFF16FE261DD40A</key>
 		<string>../../../../..</string>
+		<key>73D4D1429960E55CF1E6159AB21A41D3F1AB7929</key>
+		<string>../../../../../../ksana2015/installer</string>
 		<key>A41CE83FFE3FEBCB2029F9204DDCA6460A0E75F5</key>
 		<string>../../../../../installer</string>
 		<key>A53257B3B2CA28742EC847754735043F4176E582</key>
@@ -49,6 +53,14 @@
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
 			<string>A41CE83FFE3FEBCB2029F9204DDCA6460A0E75F5</string>
+			<key>IDESourceControlWCCName</key>
+			<string>installer</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>73D4D1429960E55CF1E6159AB21A41D3F1AB7929</string>
 			<key>IDESourceControlWCCName</key>
 			<string>installer</string>
 		</dict>

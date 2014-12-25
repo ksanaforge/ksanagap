@@ -112,7 +112,7 @@ NSString *ONLINESTORE=@"ONLINE STORE";
     return false;
 }
 -(void) copyInstaller {
-    NSString *files=@"index.html$build.js$build.css$nodemain.js$systemmenu.js$banner.png$package.json$ksana.js$jquery.js$react-with-addons.js";
+    NSString *files=@"index.html$index.css$bundle.js$bootstrap.min.js$bootstrap.min.css$swiperight.png$banner.png$ksana.js$jquery.js$react-with-addons.js";
     NSArray *tocopy=[files componentsSeparatedByString:@"$"];
     
     for (int i=0;i<tocopy.count;i++) {
