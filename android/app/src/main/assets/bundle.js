@@ -489,6 +489,10 @@ var RawgitApp=React.createClass({displayName: "RawgitApp",
 		
 		if (ksanajs) {
 			this.setState({ksanajs:ksanajs});	
+			var repouser=this.refs.repouser.getDOMNode().value;
+			var reponame=this.refs.reponame.getDOMNode().value;
+			localStorage.setItem("repouser",repouser);
+			localStorage.setItem("reponame",reponame);
 		} else {
 			this.setState({ksanajs:null,message:"Invalid Repository."});
 		}
