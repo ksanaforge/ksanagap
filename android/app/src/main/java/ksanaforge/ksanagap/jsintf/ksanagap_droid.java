@@ -121,8 +121,8 @@ public class ksanagap_droid {
         } else {
             ardownloadingFiles.add(downloadings[i]);
         }
-
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        Uri uri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
 
         request.setTitle(dbid+":"+localfn);
         //Set a description of this download, to be displayed in notifications (if enabled)
