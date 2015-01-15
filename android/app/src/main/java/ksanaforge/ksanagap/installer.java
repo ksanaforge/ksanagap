@@ -19,8 +19,8 @@ import org.json.JSONObject;
 public class installer {
     static public void copySelf(AssetManager assets,String installerpath) throws IOException {
 
-        String[] filenames = {"index.html","jquery.js","react-with-addons.js","build.css","build.js",
-                "nodemain.js","systemmenu.js","package.json","banner.png","ksana.js"};
+        String[] filenames = {"index.html","jquery.js","react-with-addons.js","index.css","bundle.js","bundle.js.map",
+                "nwmain.js","bootstrap.min.css","bootstrap.min.js","banner.png","ksana.js","swiperight.png"};
 
         final File path = new File(installerpath);
         if (!path.exists()) path.mkdirs();
